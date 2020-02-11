@@ -1,4 +1,7 @@
-pandas
-numpy
 requests
 progress
+pandas
+numpy
+pyodbc
+psycopg2
+sqlalchemy

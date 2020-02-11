@@ -1,0 +1,8 @@
+sandbox/
+analysis/
+datasrc/
+data/
+.ipynb_checkpoints/
+.git/
+docker-compose.yml
+.gitignore

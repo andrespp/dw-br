@@ -5,7 +5,7 @@ DW-BRA
 
 Um Data Warehouse (DW) de conjuntos de dados abertos Brasileiros.
 
-## Implantação de Uso
+## Implantação e Utilização
 
 ### Clone do Repositório
 
@@ -24,17 +24,26 @@ Para configurar o banco de dados que irá receber o DW, as variáveis do arquivo
 $ docker-compose up -d
 ```
 
+### Verifica Instalação do Docker
+
+```bash
+$ make test
+```
+
 ### Construir/Atualizar o DW
 
 ```bash
-$ make setup
-$ make build
+$ make setup   # Cria imagem do script de ETL
+$ make run     # Ambiente de produção (config.ini)
+$ make run-dev # Ambiente de desenvolvimento (config-dev.ini)
 ```
 
 ### Atualizar o DW
 
+
 ```bash
-$ make run
+$ make run     # Ambiente de produção (config.ini)
+$ make run-dev # Ambiente de desenvolvimento (config-dev.ini)
 ```
 
 ## Desenvolvimento
