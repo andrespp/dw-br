@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import ssl
 import os.path
 import hashlib
 import requests
@@ -37,7 +38,7 @@ class Fetcher:
     def get(self, url, fname=False):
         '''Download file from url using requests library
         '''
-        r = requests.get(url, stream=True)
+        r = requests.get(url, stream=True, verify=False)
         size = r.headers['content-length']
         if not fname:
             fname = url.split('/')[-1]
@@ -73,7 +74,12 @@ class Fetcher:
                 else:
                     self.p.goto(blocks * bs)
 
-        urlretrieve(url, to, update)
+        try:
+            urlretrieve(url, to, update)
+        except SSLCertVerificationError:
+            ssl._create_default_https_context = ssl._create_unverified_context
+            urlretrieve(url, to, update)
+
         self.p.finish()
 
 
