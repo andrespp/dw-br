@@ -38,7 +38,20 @@ CREATE TABLE dim_date
 ;
 """
 
+DIM_MUNICIPIO = """
+CREATE TABLE dim_municipio
+(
+  MUNICIPIO_SK BIGSERIAL
+, COD_SIAFI INT
+, COD_IBGE INT
+, CNPJ VARCHAR(14)
+, UF VARCHAR(2)
+, NOME VARCHAR(60)
+);
+"""
+
 # Data Warehouse Structure
 DW_TABLES = dict(dim_date=DIM_DATE,
+                 dim_municipio=DIM_MUNICIPIO,
                  aux_dwupdate=AUX_DWUPDATE,
                 )

@@ -25,9 +25,12 @@ def load(dw, hostname, elapsed_time, truncate=False, verbose=False):
 
         verbose | boolean
     """
+    if (verbose):
+        print('\n{}: '.format(TABLE_NAME))
+
     # Truncate table
     if truncate:
-        dw.truncate(TABLE_NAME)
+        dw.truncate(TABLE_NAME, verbose)
 
     df = pd.DataFrame([[dt.datetime.now(), hostname, elapsed_time]],
                       columns='update hostname elapsed_time'.split())
