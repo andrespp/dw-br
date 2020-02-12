@@ -10,6 +10,7 @@ import lib.datasrc_mssql as dsm
 from dw.aux_create_tables import DW_TABLES
 from dw import aux_dw_updates
 from dw import dim_municipio
+from dw import fato_capes_avaliacao_ppg
 
 # Track execution time
 start_time = time.time()
@@ -115,7 +116,7 @@ if __name__ == '__main__':
     ###### DW Update
     #
     # Test if DW's tables exists
-    DWO.create_tables(DW_TABLES)
+    DWO.create_tables(DW_TABLES, verbose=VERBOSE)
 
     if FULL_DW or ('date' in TARGETS):
         if(VERBOSE): print("\n# Building dim_date")
@@ -123,20 +124,27 @@ if __name__ == '__main__':
     if FULL_DW or ('stg' in TARGETS):
         if(VERBOSE): print("\n# Building staging tables")
 
+    ### Dimension Tables
     if FULL_DW or ('dim' in TARGETS):
         if(VERBOSE): print("\n# Building dimension tables")
-        dim_municipio.load(DWO,
-                           dim_municipio.transform(dim_municipio.extract(
-                                       config['MUNICIPIOS']['FILE'], VERBOSE)),
-                           truncate=False,
-                           verbose=VERBOSE)
-        #dim_ccusto.load(DWO,
-        #                df=dim_ccusto.transform(dim_ccusto.extract(SPE)),
-        #                truncate=True)
 
+        ## dim_municipio
+        #dim_municipio.load(DWO,
+        #                   dim_municipio.transform(dim_municipio.extract(
+        #                               config['MUNICIPIOS']['FILE'], VERBOSE)),
+        #                   truncate=True,
+        #                   verbose=VERBOSE)
+
+    ### Fact Tables
     if FULL_DW or ('fact' in TARGETS):
         if(VERBOSE): print("\n# Building fact tables")
 
+        # fato_capes_avaliacao_ppg
+        capes_ppg_ds_list = config['CAPES']['PROGRAMAS'].split(',\n')
+        df = fato_capes_avaliacao_ppg.extract(capes_ppg_ds_list,
+                                        verbose=VERBOSE)
+        df = fato_capes_avaliacao_ppg.transform(df, DWO, verbose=VERBOSE)
+        fato_capes_avaliacao_ppg.load(DWO, df, verbose=VERBOSE)
 
     # Post Processing
     elapsed_time = (time.time() - start_time) / 60

@@ -5,4 +5,5 @@ numpy
 pyodbc
 psycopg2
 sqlalchemy
+unidecode
 xlrd
