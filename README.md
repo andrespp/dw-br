@@ -33,7 +33,7 @@ $ make test
 ### Construir/Atualizar o DW
 
 ```bash
-$ make setup   # Cria imagem do script de ETL
+$ make setup   # Configura o ambiente
 $ make run     # Ambiente de produção (config.ini)
 $ make run-dev # Ambiente de desenvolvimento (config-dev.ini)
 ```
