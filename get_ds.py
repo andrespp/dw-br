@@ -96,12 +96,12 @@ if __name__ == '__main__':
             fhash = Fetcher().check_hash(fname)
             if fhash != ds['hash_md5']:
                 print('WARN: Arquivo {} corrompido! Baixando.'
-                      'novamente '.format(fname), end='')
+                      'novamente '.format(fname), end='', flush=True)
                 Fetcher().get_urllib(ds['url'], fname)
             else:
                 print('Arquivo {} íntegro. Download ignorado.'.format(fname))
         else:
             print('Arquivo {} não localizado. '
-                  'Iniciando Download. '.format(fname), end='')
+                  'Iniciando Download. '.format(fname), end='', flush=True)
             Fetcher().get_urllib(ds['url'], fname)
 
