@@ -1,62 +1,56 @@
 DW-BRA
 ======
 
-## Introduction
-Build Lototeca's data warehouse from...
+## Introdução
 
-## Deploy and Usage
+Um Data Warehouse (DW) de conjuntos de dados abertos Brasileiros.
 
-### Clone Repository
+## Implantação e Utilização
+
+### Clone do Repositório
 
 ```bash
-$ git clone
+$ git clone https://github.com/andrespp/dw-bra.git
 ```
 
-### Set Connection Parameters
+### Configurar os parâmetros de conexões
 
-In order to set up the OLAP database and ETL process, `config.ini` variables must be set.
+Para configurar o banco de dados que irá receber o DW, as variáveis do arquivo
+`config.ini` devem ser definidas.
 
-### Start DW Database
+### Iniciar o SGBD do DW
 
 ```bash
 $ docker-compose up -d
 ```
 
-### Build/Update the Data Warehouse
-
-**Production Environment**
+### Verifica Instalação do Docker
 
 ```bash
-$ make setup
-$ make build
+$ make test
 ```
 
-**Development Environment**
+### Construir/Atualizar o DW
 
 ```bash
-$ make setup
-$ make build-dev
+$ make setup   # Configura o ambiente
+$ make run     # Ambiente de produção (config.ini)
+$ make run-dev # Ambiente de desenvolvimento (config-dev.ini)
 ```
 
-### Update the Data Warehouse
+### Atualizar o DW
 
-**Production Environment**
 
 ```bash
-$ make run
+$ make run     # Ambiente de produção (config.ini)
+$ make run-dev # Ambiente de desenvolvimento (config-dev.ini)
 ```
 
-**Development Environment**
-
-```bash
-$ make run-dev
-```
-
-## Development
+## Desenvolvimento
 
 ### Virtual environment
 
-Set Virtual environment for local development:
+Configurar o ambiente virtual para desenvolvimento local:
 
 ```bash
 conda create --name dwbra python=3.8
@@ -64,4 +58,4 @@ conda activate dwbra
 conda install -c conda-forge --yes --file requirements.txt
 ```
 
-## References
+## Referências
