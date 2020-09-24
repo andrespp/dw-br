@@ -1,9 +1,5 @@
-requests
 progress
-pandas
-numpy
-pyodbc
-psycopg2
-sqlalchemy
+requests
+uetl==0.0.6
 unidecode
 xlrd

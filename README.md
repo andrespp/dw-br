@@ -55,7 +55,7 @@ Configurar o ambiente virtual para desenvolvimento local:
 ```bash
 conda create --name dwbra python=3.8
 conda activate dwbra
-conda install -c conda-forge --yes --file requirements.txt
+pip install -r requirements.txt
 ```
 
 ## Referências

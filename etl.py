@@ -5,8 +5,7 @@ import configparser
 import argparse
 import time
 import os.path
-import lib.datawarehouse as dw
-import lib.datasrc_mssql as dsm
+import uetl
 from dw.aux_create_tables import DW_TABLES
 from dw import aux_dw_updates
 from dw import dim_municipio
@@ -89,13 +88,13 @@ if __name__ == '__main__':
 
     ### DATA WAREHOUSE
     # Initialize Data Warehouse object
-    DWO = dw.DataWarehouse(name=config['DW']['NAME'],
-                           dbms=config['DW']['DBMS'],
-                           host=config['DW']['HOST'],
-                           port=config['DW']['PORT'],
-                           base=config['DW']['BASE'],
-                           user=config['DW']['USER'],
-                           pswd=config['DW']['PASS'])
+    DWO = uetl.DataWarehouse(name=config['DW']['NAME'],
+                             dbms=config['DW']['DBMS'],
+                             host=config['DW']['HOST'],
+                             port=config['DW']['PORT'],
+                             base=config['DW']['BASE'],
+                             user=config['DW']['USER'],
+                             pswd=config['DW']['PASS'])
 
     # Test dw db connection
     if DWO.test_conn():
@@ -128,12 +127,12 @@ if __name__ == '__main__':
     if FULL_DW or ('dim' in TARGETS):
         if(VERBOSE): print("\n# Building dimension tables")
 
-        ## dim_municipio
-        #dim_municipio.load(DWO,
-        #                   dim_municipio.transform(dim_municipio.extract(
-        #                               config['MUNICIPIOS']['FILE'], VERBOSE)),
-        #                   truncate=True,
-        #                   verbose=VERBOSE)
+        # dim_municipio
+        dim_municipio.load(DWO,
+                           dim_municipio.transform(dim_municipio.extract(
+                                       config['MUNICIPIOS']['FILE'], VERBOSE)),
+                           truncate=True,
+                           verbose=VERBOSE)
 
     ### Fact Tables
     if FULL_DW or ('fact' in TARGETS):
