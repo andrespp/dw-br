@@ -18,8 +18,8 @@ def extract(data_src, verbose=False):
         data : Pandas DataFrame
             Extracted Data
     """
-    if (verbose):
-        print('\n{}: '.format(TABLE_NAME))
+    if(verbose):
+        print('{}: Extract. '.format(TABLE_NAME), end='', flush=True)
 
     dtype={'CÓDIGO SIAFI':int,
            'CNPJ':str,
@@ -27,9 +27,14 @@ def extract(data_src, verbose=False):
            'UF':str,
            'CÓDIGO IBGE':int}
 
-    return pd.read_excel(data_src, sheet_name='TABMUN SIAFI',dtype=dtype)
+    df = pd.read_excel(data_src, sheet_name='TABMUN SIAFI',dtype=dtype)
 
-def transform(df):
+    if(verbose):
+        print('{} registries extracted.'.format(len(df)))
+
+    return df
+
+def transform(df, verbose=False):
     """Transform data
 
     Parameters
@@ -41,6 +46,9 @@ def transform(df):
         data : Pandas DataFrame
             Data to be tranformed
     """
+    if(verbose):
+        print('{}: Transform. '.format(TABLE_NAME), end='', flush=True)
+
     # Rename Columns
     df.rename(index=str,
               columns={'CÓDIGO SIAFI': 'COD_SIAFI',
@@ -52,11 +60,17 @@ def transform(df):
     ## Select and Reorder columns
     df = df[['COD_SIAFI', 'COD_IBGE', 'CNPJ', 'UF', 'NOME']]
 
+    # Remove invalid IBGE Codes
+    df = df[df['COD_IBGE']!=0]
+
     # Lowercase columns names
     df.columns = [x.lower() for x in df.columns]
 
     # Set surrogate keys
     df.set_index(np.arange(1, len(df)+1), inplace=True)
+
+    if(verbose):
+        print('{} registries transformed.'.format(len(df)))
 
     return df
 
@@ -74,8 +88,14 @@ def load(dw, df, truncate=False, verbose=False):
         truncate | boolean
             If true, truncate table before loading data
     """
+    if(verbose):
+        print('{}: Load. '.format(TABLE_NAME), end='', flush=True)
+
     # Truncate table
     if truncate:
         dw.truncate(TABLE_NAME)
+
+    if(verbose):
+        print('{} registries loaded.\n'.format(len(df)))
 
     return dw.write(TABLE_NAME, df, verbose=verbose)
