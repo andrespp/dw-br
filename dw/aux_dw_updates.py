@@ -25,8 +25,6 @@ def load(dw, hostname, elapsed_time, truncate=False, verbose=False):
 
         verbose | boolean
     """
-    if (verbose):
-        print('\n{}: '.format(TABLE_NAME))
 
     # Truncate table
     if truncate:
