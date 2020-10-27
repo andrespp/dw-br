@@ -95,8 +95,10 @@ def load(dw, df, truncate=False, verbose=False):
     if truncate:
         dw.truncate(TABLE_NAME)
 
+    dw.write(TABLE_NAME, df)
+
     if(verbose):
         print('{} registries loaded.\n'.format(len(df)))
 
-    return dw.write(TABLE_NAME, df)
+    return
 
