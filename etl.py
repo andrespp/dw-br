@@ -10,6 +10,7 @@ from dw.aux_create_tables import DW_TABLES
 from dw import aux_dw_updates
 from dw import dim_municipio
 from dw import fato_capes_avaliacao_ppg
+from dw import fato_rais
 
 # Track execution time
 start_time = time.time()
@@ -128,11 +129,9 @@ if __name__ == '__main__':
         if(VERBOSE): print("\n# Building dimension tables")
 
         # dim_municipio
-        dim_municipio.load(DWO,
-                           dim_municipio.transform(dim_municipio.extract(
-                                       config['MUNICIPIOS']['FILE'], VERBOSE)),
-                           truncate=True,
-                           verbose=VERBOSE)
+        df = dim_municipio.extract(config['MUNICIPIOS']['FILE'], VERBOSE)
+        df = dim_municipio.transform(df, VERBOSE)
+        dim_municipio.load(DWO, df, truncate=True, verbose=VERBOSE)
 
     ### Fact Tables
     if FULL_DW or ('fact' in TARGETS):
@@ -144,6 +143,12 @@ if __name__ == '__main__':
                                         verbose=VERBOSE)
         df = fato_capes_avaliacao_ppg.transform(df, DWO, verbose=VERBOSE)
         fato_capes_avaliacao_ppg.load(DWO, df, verbose=VERBOSE)
+
+        # fato_rais
+        rais_ds_list = config['RAIS']['CONJUNTOS'].split(',\n')
+        df = fato_rais.extract(rais_ds_list, verbose=VERBOSE)
+        df = fato_rais.transform(df, DWO, verbose=VERBOSE)
+        fato_rais.load(DWO, df, verbose=VERBOSE)
 
     # Post Processing
     elapsed_time = (time.time() - start_time) / 60
