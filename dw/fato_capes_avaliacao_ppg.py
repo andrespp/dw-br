@@ -141,7 +141,7 @@ def lookup_municipio_sk(dim_municipio, nome, uf):
     Returns
     -------
         municipio_sk : int
-            MUNICIPIO_SK. -1 if not found
+            MUNICIPIO_SK. 1 if not found
     """
     r = dim_municipio[(dim_municipio['nome']==nome) &
                       (dim_municipio['uf']==uf)]['municipio_sk']
@@ -149,4 +149,4 @@ def lookup_municipio_sk(dim_municipio, nome, uf):
     if len(r) > 0:
         return r.iloc[0]
     else:
-        return -1
+        return 1

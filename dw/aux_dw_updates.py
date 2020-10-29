@@ -33,4 +33,4 @@ def load(dw, hostname, elapsed_time, truncate=False, verbose=False):
     df = pd.DataFrame([[dt.datetime.now(), hostname, elapsed_time]],
                       columns='update hostname elapsed_time'.split())
 
-    return dw.write(TABLE_NAME, df, verbose)
+    return dw.write_table(TABLE_NAME, df, verbose)

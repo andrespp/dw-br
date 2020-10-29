@@ -29,6 +29,12 @@ def extract(data_src, verbose=False):
 
     df = pd.read_excel(data_src, sheet_name='TABMUN SIAFI',dtype=dtype)
 
+    head = pd.DataFrame([[-1,'','','',-1]],
+                        columns= ['CÓDIGO SIAFI', 'CNPJ', 'DESCRIÇÃO',
+                                  'UF', 'CÓDIGO IBGE']
+                       )
+    df = pd.concat([head, df])
+
     if(verbose):
         print('{} registries extracted.'.format(len(df)))
 
@@ -93,7 +99,7 @@ def load(dw, df, truncate=False, verbose=False):
 
     # Truncate table
     if truncate:
-        dw.truncate(TABLE_NAME)
+        dw.truncate(TABLE_NAME, cascade=True)
 
     dw.write(TABLE_NAME, df)
 
