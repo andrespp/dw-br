@@ -1,6 +1,6 @@
 progress
 py7zr
 requests
-uetl==0.0.7
+uetl==0.0.8
 unidecode
 xlrd
