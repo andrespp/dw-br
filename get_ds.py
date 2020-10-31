@@ -4,6 +4,7 @@ import os.path
 import hashlib
 import requests
 import pandas as pd
+import urllib
 from urllib.request import urlretrieve
 from progress.bar import Bar
 from progress.spinner import Spinner
@@ -76,9 +77,13 @@ class Fetcher:
 
         try:
             urlretrieve(url, to, update)
-        except SSLCertVerificationError:
+        except ssl.SSLCertVerificationError:
             ssl._create_default_https_context = ssl._create_unverified_context
             urlretrieve(url, to, update)
+        except urllib.error.HTTPError as e:
+            print(f'ERR: {e.code}: {e.reason}. {url}\n', flush=True)
+        except urllib.error.URLError as e:
+            print(f'ERR: {e.reason}. {url}\n', flush=True)
 
         self.p.finish()
 
@@ -97,13 +102,12 @@ if __name__ == '__main__':
             fhash = Fetcher().check_hash(fname)
             if fhash != ds['hash_md5']:
                 print(f'WARN: Arquivo {ds["id"]}-{fname} corrompido! Baixando.'
-                      'novamente ', end='', flush=True)
+                      'novamente ', flush=True)
                 Fetcher().get_urllib(ds['url'], fname)
             else:
                 print(f'Arquivo {ds["id"]}-{fname} íntegro. Download ignorado.')
         else:
             print(f'Arquivo {ds["id"]}-{fname} não localizado. '
-                   'Iniciando Download.',
-                  end='', flush=True)
+                   'Iniciando Download.', flush=True)
             Fetcher().get_urllib(ds['url'], fname)
 
