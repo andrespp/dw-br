@@ -34,6 +34,7 @@ $ make test
 
 ```bash
 $ make setup   # Configura o ambiente
+$ make getds   # Download dos datasets
 $ make run     # Ambiente de produção (config.ini)
 $ make run-dev # Ambiente de desenvolvimento (config-dev.ini)
 ```
@@ -53,9 +54,7 @@ $ make run-dev # Ambiente de desenvolvimento (config-dev.ini)
 Configurar o ambiente virtual para desenvolvimento local:
 
 ```bash
-conda create --name dwbra python=3.8
-conda activate dwbra
-pip install -r requirements.txt
+conda env create -f environment.yml
 ```
 
 ## Referências

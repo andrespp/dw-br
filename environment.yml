@@ -1,0 +1,13 @@
+name: dwbra
+channels:
+  - defaults
+dependencies:
+  - python==3.8
+  - progress
+  - requests
+  - unidecode
+  - xlrd
+  - pip
+  - pip:
+    - uetl==0.0.8
+    - py7zr
