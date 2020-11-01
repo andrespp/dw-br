@@ -81,9 +81,11 @@ class Fetcher:
             ssl._create_default_https_context = ssl._create_unverified_context
             urlretrieve(url, to, update)
         except urllib.error.HTTPError as e:
-            print(f'ERR: {e.code}: {e.reason}. {url}\n', flush=True)
+            print(f'ERR: {e.code} {e.reason}. {url}\n', flush=True)
+            return
         except urllib.error.URLError as e:
             print(f'ERR: {e.reason}. {url}\n', flush=True)
+            return
 
         self.p.finish()
 
