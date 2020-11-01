@@ -3,11 +3,12 @@ channels:
   - defaults
 dependencies:
   - python==3.8
+  - pandas
+  - pip
   - progress
   - requests
   - unidecode
   - xlrd
-  - pip
   - pip:
     - uetl==0.0.8
     - py7zr
