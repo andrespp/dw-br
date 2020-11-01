@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-import os.path
-import configparser
 import argparse
+import configparser
+import os.path
+import pandas as pd
 import py7zr
 
 # Default settings
 CONFIG_FILE = 'config.ini'
 DATASRC_DIR = './datasrc'
-DATASET_DIR = './dataset'
+DATASET_LIST = './datasets.csv'
 TARGETS = ['RAIS',
            'CAPES',
 ]
@@ -39,36 +40,25 @@ if __name__ == '__main__':
         print('ERROR: Unable to read config file ("{}")'.format(CONFIG_FILE))
         exit(-1)
 
+    # Retrieve DS Files
+    df = pd.read_csv(DATASET_LIST)
+    df['download'] = df['download'].apply(lambda x:
+                                      True if x.upper()=='S' else False)
+    ds_list = df[df['download']]
+
     # Extract TARGET Datasets
     if 'CAPES' in TARGETS:
         print('Extracting CAPES dataset...skiped!')
 
     if 'RAIS' in TARGETS:
-        print('Extracting RAIS dataset', end='')
+        print('Extracting RAIS dataset')
 
         rais_ds_list = config['RAIS']['CONJUNTOS'].split(',\n')
 
-        for i in rais_ds_list:
-            print('.', end='')
-            with py7zr.SevenZipFile(i, mode='r') as z:
-                z.extractall(path=DATASET_DIR)
-
-        print('ok')
-
-
-    #for index, ds in df.iterrows():
-    #    fname = DATASRC_DIR + '/' + ds['arquivo']
-
-    #    if os.path.isfile(fname):
-    #        fhash = Fetcher().check_hash(fname)
-    #        if fhash != ds['hash_md5']:
-    #            print('WARN: Arquivo {} corrompido! Baixando.'
-    #                  'novamente '.format(fname), end='', flush=True)
-    #            Fetcher().get_urllib(ds['url'], fname)
-    #        else:
-    #            print('Arquivo {} íntegro. Download ignorado.'.format(fname))
-    #    else:
-    #        print('Arquivo {} não localizado. '
-    #              'Iniciando Download. '.format(fname), end='', flush=True)
-    #        Fetcher().get_urllib(ds['url'], fname)
+        for index, ds in ds_list[ds_list['nome']=='RAIS'].iterrows():
+            print(f"\t{ds['arquivo']}...", end='', flush=True)
+            with py7zr.SevenZipFile(DATASRC_DIR + '/' + ds['arquivo'],
+                                    mode='r') as z:
+                z.extractall(path=DATASRC_DIR)
+            print('ok!', flush=True)
 

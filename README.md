@@ -33,10 +33,11 @@ $ make test
 ### Construir/Atualizar o DW
 
 ```bash
-$ make setup   # Configura o ambiente
-$ make getds   # Download dos datasets
-$ make run     # Ambiente de produção (config.ini)
-$ make run-dev # Ambiente de desenvolvimento (config-dev.ini)
+$ make setup     # Configura o ambiente
+$ make getds     # Download dos datasets
+$ make extractds # Extrai datasets compactados
+$ make run       # Ambiente de produção (config.ini)
+$ make run-dev   # Ambiente de desenvolvimento (config-dev.ini)
 ```
 
 ### Atualizar o DW
