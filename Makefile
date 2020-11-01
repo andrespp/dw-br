@@ -23,15 +23,15 @@ setup: Dockerfile
 
 .PHONY: getds
 getds:
-	docker run -it --rm -v $(PWD):/usr/src/app $(IMAGE_NAME) ./get_ds.py
+	docker run --rm -v $(PWD):/usr/src/app $(IMAGE_NAME) ./get_ds.py
 
 .PHONY: run
 run:
-	docker run -it --rm -v $(PWD):/usr/src/app $(IMAGE_NAME) ./etl.py -v -a
+	docker run --rm -v $(PWD):/usr/src/app $(IMAGE_NAME) ./etl.py -v -a
 
 .PHONY: run-dev
 run-dev:
-	docker run -it --rm -v $(PWD):/usr/src/app $(IMAGE_NAME) ./etl.py -v -a -c config-dev.ini
+	docker run --rm -v $(PWD):/usr/src/app $(IMAGE_NAME) ./etl.py -v -a -c config-dev.ini
 
 .PHONY: runi
 runi:
