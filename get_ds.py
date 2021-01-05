@@ -76,8 +76,9 @@ class Fetcher:
                     self.p.goto(blocks * bs)
 
         try:
+            ssl._create_default_https_context = ssl._create_unverified_context
             urlretrieve(url, to, update)
-        except ssl.SSLCertVerificationError:
+        except ssl.SSLCertVerificationError or ssl.SSLError:
             ssl._create_default_https_context = ssl._create_unverified_context
             urlretrieve(url, to, update)
         except urllib.error.HTTPError as e:
