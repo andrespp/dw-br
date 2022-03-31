@@ -2,7 +2,6 @@
 """
 import pandas as pd
 import numpy as np
-import xlrd
 from unidecode import unidecode
 from dw import aux_lookups as l
 

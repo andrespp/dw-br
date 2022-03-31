@@ -2,7 +2,6 @@
 """
 import pandas as pd
 import numpy as np
-import xlrd
 
 TABLE_NAME = 'fato_rais'
 CHUNKSIZE=10**5
