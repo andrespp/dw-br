@@ -2,7 +2,6 @@
 """
 import pandas as pd
 import numpy as np
-import xlrd
 
 TABLE_NAME = 'dim_municipio'
 
@@ -27,13 +26,9 @@ def extract(data_src, verbose=False):
            'UF':str,
            'CÓDIGO IBGE':int}
 
-    df = pd.read_excel(data_src, sheet_name='TABMUN SIAFI',dtype=dtype)
-
-    head = pd.DataFrame([[-1,'','','',-1]],
-                        columns= ['CÓDIGO SIAFI', 'CNPJ', 'DESCRIÇÃO',
-                                  'UF', 'CÓDIGO IBGE']
-                       )
-    df = pd.concat([head, df])
+    cols = ['CÓDIGO SIAFI', 'CNPJ', 'DESCRIÇÃO', 'UF', 'CÓDIGO IBGE']
+    df = pd.read_csv(data_src, names=cols, sep=';', encoding='latin1'
+    )
 
     if(verbose):
         print('{} registries extracted.'.format(len(df)))
