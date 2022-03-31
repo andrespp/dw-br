@@ -1,14 +1,20 @@
 name: dwbra
+
 channels:
+  - conda-forge
   - defaults
+
 dependencies:
-  - python==3.8
+  - python=3.10
+  - numpy
   - pandas
   - pip
   - progress
+  - psycopg2
   - requests
+  - sqlalchemy
+  - sqlalchemy_schemadisplay
   - unidecode
-  - xlrd
   - pip:
-    - uetl==0.0.8
     - py7zr
+    - uetl==0.0.8
