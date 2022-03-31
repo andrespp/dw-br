@@ -144,11 +144,11 @@ if __name__ == '__main__':
         df = fato_capes_avaliacao_ppg.transform(df, DWO, verbose=VERBOSE)
         fato_capes_avaliacao_ppg.load(DWO, df, verbose=VERBOSE)
 
-        # fato_rais
-        rais_ds_list = config['RAIS']['CONJUNTOS'].split(',\n')
-        df = fato_rais.extract(rais_ds_list, verbose=VERBOSE)
-        df = fato_rais.transform(df, DWO, verbose=VERBOSE)
-        fato_rais.load(DWO, df, verbose=VERBOSE)
+        ## fato_rais
+        #rais_ds_list = config['RAIS']['CONJUNTOS'].split(',\n')
+        #df = fato_rais.extract(rais_ds_list, verbose=VERBOSE)
+        #df = fato_rais.transform(df, DWO, verbose=VERBOSE)
+        #fato_rais.load(DWO, df, verbose=VERBOSE)
 
     # Post Processing
     elapsed_time = (time.time() - start_time) / 60
