@@ -4,6 +4,7 @@ import os.path
 import hashlib
 import requests
 import pandas as pd
+import urllib
 from urllib.request import urlretrieve
 from progress.bar import Bar
 from progress.spinner import Spinner
@@ -75,10 +76,17 @@ class Fetcher:
                     self.p.goto(blocks * bs)
 
         try:
-            urlretrieve(url, to, update)
-        except SSLCertVerificationError:
             ssl._create_default_https_context = ssl._create_unverified_context
             urlretrieve(url, to, update)
+        except ssl.SSLCertVerificationError or ssl.SSLError:
+            ssl._create_default_https_context = ssl._create_unverified_context
+            urlretrieve(url, to, update)
+        except urllib.error.HTTPError as e:
+            print(f'ERR: {e.code} {e.reason}. {url}\n', flush=True)
+            return
+        except urllib.error.URLError as e:
+            print(f'ERR: {e.reason}. {url}\n', flush=True)
+            return
 
         self.p.finish()
 
@@ -87,21 +95,22 @@ class Fetcher:
 if __name__ == '__main__':
 
     df = pd.read_csv(DATASET_LIST)
-    #df = df.head(5)
+    df['download'] = df['download'].apply(lambda x:
+                                          True if x.upper()=='S' else False)
 
-    for index, ds in df.iterrows():
+    for index, ds in df[df['download']].iterrows():
         fname = DATASRC_DIR + '/' + ds['arquivo']
 
         if os.path.isfile(fname):
             fhash = Fetcher().check_hash(fname)
             if fhash != ds['hash_md5']:
-                print('WARN: Arquivo {} corrompido! Baixando.'
-                      'novamente '.format(fname), end='', flush=True)
+                print(f'WARN: Arquivo {ds["id"]}-{fname} corrompido! Baixando.'
+                      'novamente ', flush=True)
                 Fetcher().get_urllib(ds['url'], fname)
             else:
-                print('Arquivo {} íntegro. Download ignorado.'.format(fname))
+                print(f'Arquivo {ds["id"]}-{fname} íntegro. Download ignorado.')
         else:
-            print('Arquivo {} não localizado. '
-                  'Iniciando Download. '.format(fname), end='', flush=True)
+            print(f'Arquivo {ds["id"]}-{fname} não localizado. '
+                   'Iniciando Download.', flush=True)
             Fetcher().get_urllib(ds['url'], fname)
 

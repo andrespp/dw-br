@@ -1,28 +1,33 @@
-FROM python:3.8
+FROM continuumio/miniconda3
 MAINTAINER Andre Pereira andrespp@gmail.com
 
+USER root
+
+# vim
 RUN apt-get update && apt-get install -y vim && cd ~/ && \
  wget https://raw.githubusercontent.com/andrespp/dotfiles/master/.vimrc-basic && \
  mv .vimrc-basic .vimrc
 
-RUN apt-get -y install apt-transport-https unixodbc-dev curl && \
-    curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
-    curl https://packages.microsoft.com/config/ubuntu/18.04/prod.list > \
-		/etc/apt/sources.list.d/mssql-release.list && \
-    apt-get update && \
-    ACCEPT_EULA=Y apt-get -y install msodbcsql17 mssql-tools && \
-	apt-get clean && rm -rf /var/lib/apt/list && \
-    echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bash_profile && \
-    echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc && \
-    /bin/bash -c "source ~/.bashrc"
+# Locale
+RUN apt-get install -y locales && locale-gen pt_BR.UTF-8
 
-COPY ./requirements.txt ./
+# Pyscopg
+RUN apt-get -y install build-essential unixodbc-dev python3-psycopg2 libpq-dev
 
-RUN pip install -r requirements.txt
+# Setup Conda Environment
+ARG CONDA_ENV_NAME=dwbra
+COPY ./environment.yml ./
+RUN conda env create -f environment.yml
+RUN echo "source activate $CONDA_ENV_NAME" > ~/.bashrc
+ENV PATH /opt/conda/envs/$CONDA_ENV_NAME/bin:$PATH
+
+WORKDIR /usr/src/app
+
+USER 1000
 
 COPY . .
 
-WORKDIR /usr/src/app
+ENV TZ=America/Belem
 
 ENTRYPOINT ["./entrypoint.sh"]
 CMD ["help"]

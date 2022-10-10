@@ -1,6 +1,7 @@
 sandbox/
 analysis/
 datasrc/
+dataset/
 data/
 .ipynb_checkpoints/
 .git/

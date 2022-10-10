@@ -1,9 +1,0 @@
-requests
-progress
-pandas
-numpy
-pyodbc
-psycopg2
-sqlalchemy
-unidecode
-xlrd

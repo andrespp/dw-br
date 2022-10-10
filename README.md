@@ -33,9 +33,11 @@ $ make test
 ### Construir/Atualizar o DW
 
 ```bash
-$ make setup   # Configura o ambiente
-$ make run     # Ambiente de produção (config.ini)
-$ make run-dev # Ambiente de desenvolvimento (config-dev.ini)
+$ make setup     # Configura o ambiente
+$ make getds     # Download dos datasets
+$ make extractds # Extrai datasets compactados
+$ make run       # Ambiente de produção (config.ini)
+$ make run-dev   # Ambiente de desenvolvimento (config-dev.ini)
 ```
 
 ### Atualizar o DW
@@ -53,9 +55,7 @@ $ make run-dev # Ambiente de desenvolvimento (config-dev.ini)
 Configurar o ambiente virtual para desenvolvimento local:
 
 ```bash
-conda create --name dwbra python=3.8
-conda activate dwbra
-conda install -c conda-forge --yes --file requirements.txt
+conda env create -f environment.yml
 ```
 
 ## Referências

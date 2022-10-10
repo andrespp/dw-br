@@ -2,7 +2,6 @@
 """
 import pandas as pd
 import numpy as np
-import xlrd
 from unidecode import unidecode
 from dw import aux_lookups as l
 
@@ -20,8 +19,8 @@ def extract(ds_files, verbose=False):
         data : Pandas DataFrame
             Extracted Data
     """
-    if (verbose):
-        print('\n{}: '.format(TABLE_NAME))
+    if(verbose):
+        print('{}: Extract. '.format(TABLE_NAME), end='', flush=True)
 
     # Read files
     df_list = []
@@ -39,7 +38,12 @@ def extract(ds_files, verbose=False):
         df_list[i] = df_list[i][columns]
 
     # Concatenate datasets
-    return pd.concat(df_list, axis=0, ignore_index=True)
+    df = pd.concat(df_list, axis=0, ignore_index=True)
+
+    if(verbose):
+        print('{} registries extracted.'.format(len(df)))
+
+    return df
 
 
 def transform(df, dw, verbose=False):
@@ -57,11 +61,13 @@ def transform(df, dw, verbose=False):
         data : Pandas DataFrame
             Data to be tranformed
     """
+    if(verbose):
+        print('{}: Transform. '.format(TABLE_NAME), end='', flush=True)
+
     # Cleanup Data
     df['MUNICIPIO'] = df['NM_MUNICIPIO_PROGRAMA_IES'].apply(unidecode)
 
     # lookup data
-    if (verbose): print('Performing lookups')
     dim_municipio = l.lookup_dim_municipio(dw)
     df['MUNICIPIO_SK'] = df.apply(lambda x:
                                     lookup_municipio_sk(dim_municipio,
@@ -84,6 +90,9 @@ def transform(df, dw, verbose=False):
     # Set surrogate keys
     df.set_index(np.arange(1, len(df)+1), inplace=True)
 
+    if(verbose):
+        print('{} registries transformed.'.format(len(df)))
+
     return df
 
 def load(dw, df, truncate=False, verbose=False):
@@ -100,11 +109,19 @@ def load(dw, df, truncate=False, verbose=False):
         truncate | boolean
             If true, truncate table before loading data
     """
+    if(verbose):
+        print('{}: Load. '.format(TABLE_NAME), end='', flush=True)
+
     # Truncate table
     if truncate:
         dw.truncate(TABLE_NAME)
 
-    return dw.write(TABLE_NAME, df, verbose=verbose)
+    dw.write(TABLE_NAME, df)
+
+    if(verbose):
+        print('{} registries loaded.\n'.format(len(df)))
+
+    return
 
 def lookup_municipio_sk(dim_municipio, nome, uf):
     """Lookup municipio_sk by Name and UF (exact match)
@@ -123,7 +140,7 @@ def lookup_municipio_sk(dim_municipio, nome, uf):
     Returns
     -------
         municipio_sk : int
-            MUNICIPIO_SK. -1 if not found
+            MUNICIPIO_SK. 1 if not found
     """
     r = dim_municipio[(dim_municipio['nome']==nome) &
                       (dim_municipio['uf']==uf)]['municipio_sk']
@@ -131,4 +148,4 @@ def lookup_municipio_sk(dim_municipio, nome, uf):
     if len(r) > 0:
         return r.iloc[0]
     else:
-        return -1
+        return 1
