@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 """etl.py
 """
-import configparser
 import argparse
-import time
+import configparser
 import os.path
+import time
+import traceback
 import uetl
 from dw.aux_create_tables import DW_TABLES
 from dw import aux_dw_updates
+from dw import stg_caged
 from dw import dim_municipio
-from dw import fato_capes_avaliacao_ppg
-from dw import fato_rais
 
 # Track execution time
 start_time = time.time()
@@ -69,8 +69,9 @@ if __name__ == '__main__':
     try:
         config = configparser.ConfigParser()
         config.read(CONFIG_FILE)
-    except:
+    except Exception as e:
         print('ERROR: Unable to read config file ("{}")'.format(CONFIG_FILE))
+        traceback.print_exc()
         exit(-1)
 
     if(VERBOSE):
@@ -124,6 +125,14 @@ if __name__ == '__main__':
     if FULL_DW or ('stg' in TARGETS):
         if(VERBOSE): print("\n# Building staging tables")
 
+        # stg_caged
+        ds_list = config['CAGED']['CONJUNTOS'].split(',\n')
+        df = stg_caged.extract(ds_list, verbose=VERBOSE)
+        df = stg_caged.transform(df, DWO, verbose=VERBOSE)
+        stg_caged.load(DWO, df, verbose=VERBOSE)
+        # print(df)
+        # print(df.columns)
+
     ### Dimension Tables
     if FULL_DW or ('dim' in TARGETS):
         if(VERBOSE): print("\n# Building dimension tables")
@@ -137,12 +146,12 @@ if __name__ == '__main__':
     if FULL_DW or ('fact' in TARGETS):
         if(VERBOSE): print("\n# Building fact tables")
 
-        # fato_capes_avaliacao_ppg
-        capes_ppg_ds_list = config['CAPES']['PROGRAMAS'].split(',\n')
-        df = fato_capes_avaliacao_ppg.extract(capes_ppg_ds_list,
-                                        verbose=VERBOSE)
-        df = fato_capes_avaliacao_ppg.transform(df, DWO, verbose=VERBOSE)
-        fato_capes_avaliacao_ppg.load(DWO, df, verbose=VERBOSE)
+        # # fato_capes_avaliacao_ppg
+        # capes_ppg_ds_list = config['CAPES']['PROGRAMAS'].split(',\n')
+        # df = fato_capes_avaliacao_ppg.extract(capes_ppg_ds_list,
+        #                                 verbose=VERBOSE)
+        # df = fato_capes_avaliacao_ppg.transform(df, DWO, verbose=VERBOSE)
+        # fato_capes_avaliacao_ppg.load(DWO, df, verbose=VERBOSE)
 
         ## fato_rais
         #rais_ds_list = config['RAIS']['CONJUNTOS'].split(',\n')
