@@ -1,0 +1,16 @@
+---
+# Temporary download dir
+download_dir: /tmp
+
+# Preferred architecture for apt packages
+apt_arch: amd64
+
+# Docker compoose vars
+compose_version: 2.11.2
+compose_file: docker-compose-linux-x86_64
+compose_checksum: sha256:1178848502b0771b96895febeb4b1736acd5019c4ed71a8efbabf6915185fe8a
+
+# Miniconda vars
+conda_arch: x86_64
+conda_checksum: sha256:78f39f9bae971ec1ae7969f0516017f2413f17796670f7040725dd83fcff5689
+conda_path: /root/miniconda3

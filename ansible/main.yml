@@ -1,0 +1,89 @@
+---
+- hosts: dwbra
+  become: True
+
+  vars_files:
+    - vars.yml
+
+  pre_tasks:
+
+    - name: Update apt cache if needed
+      apt:
+       update_cache: True
+       cache_valid_time: 3600
+
+  tasks:
+
+    - name: Upgrade System Packages
+      apt:
+        upgrade: yes
+
+    - name: Install Basic Packages
+      apt:
+        name:
+          - htop
+          - iotop
+          - locales
+          - net-tools
+          - screen
+          - uptimed
+          - vim
+        state: present
+
+    - name: Ensure a locale exists
+      locale_gen:
+        name: pt_BR.UTF-8
+        state: present
+
+    - name: Install docker dependencies
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg2
+          - software-properties-common
+
+    - name: Add docker repository signing key
+      ansible.builtin.apt_key:
+        url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
+        state: present
+
+    - name: Add docker repository into sources list
+      ansible.builtin.apt_repository:
+        repo: "deb [arch={{ apt_arch }}] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
+        state: present
+        filename: docker
+
+    - name: Install docker
+      ansible.builtin.apt:
+        name:
+          - docker-ce
+        state: latest
+        update_cache: true
+
+    - name: Create docker plugins directory
+      file:
+        path: ~/.docker/cli-plugins
+        state: directory
+
+    - name: Download docker compose
+      get_url:
+        url: "https://github.com/docker/compose/releases/download/v{{ compose_version }}/{{ compose_file }}"
+        dest: "~/.docker/cli-plugins/docker-compose"
+        checksum: "{{ compose_checksum }}"
+        mode: u+x
+
+    - name: Download miniconda
+      get_url:
+        url: "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-{{ conda_arch }}.sh"
+        dest: "{{ download_dir }}/miniconda.sh"
+        checksum: "{{ conda_checksum }}"
+        mode: u+x
+
+    - name: Install miniconda
+      shell: >
+        {{ download_dir }}/miniconda.sh -bfp {{ conda_path }} &&
+        {{ conda_path }}/bin/conda init
+        creates={{ conda_path }}/LICENSE.txt
+
