@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """etl.py
 """
-import argparse
 import configparser
 import os.path
 import time
 import traceback
 import uetl
+from modules.cli import args
 from dw.aux_create_tables import DW_TABLES
 from dw import aux_dw_updates
 from dw import stg_caged
@@ -14,45 +14,6 @@ from dw import dim_municipio
 
 # Track execution time
 start_time = time.time()
-
-# Default settings
-CONFIG_FILE = 'config.ini'
-
-# argparse setup
-parser = argparse.ArgumentParser(
-    description="DWBRA's ETL Process")
-parser.add_argument('-c',
-                    '--config-file',
-                    type=str,
-                    default=CONFIG_FILE,
-                    help="Config file",
-                    metavar='')
-parser.add_argument('-s',
-                    '--since',
-                    required=False,
-                    type=int,
-                    help="start period in form YYYYMM",
-                    metavar='')
-parser.add_argument('-v',
-                    '--verbose',
-                    action='store_true',
-                    help="increase output verbosity",
-                    )
-mode = parser.add_mutually_exclusive_group(required=True)
-mode.add_argument('-a',
-                  '--all',
-                  action='store_true',
-                  help='build all targets (whole data warehouse)'
-                 )
-mode.add_argument('-b',
-                  '--build',
-                  dest='targets',
-                  action='append',
-                  choices=['stg', 'aux', 'dim', 'fact', 'date'],
-                  metavar='',
-                  help="targets to be build: 'stg', 'aux', 'dim', 'fact', 'date'"
-                  )
-args = parser.parse_args()
 
 # Script setup
 CONFIG_FILE=args.config_file
@@ -87,7 +48,6 @@ if __name__ == '__main__':
             print("The whole data warehouse will be build.")
         else:
             print("The following targets will be build: {}".format(TARGETS))
-
 
     ############################################################################
     ##### Connections
@@ -167,11 +127,12 @@ if __name__ == '__main__':
     if FULL_DW or ('aux' in TARGETS):
         if(VERBOSE):
             print("\n# Building auxiliary tables")
-            aux_dw_updates.load(DWO, hostname=config['ETL']['HOST'],
-                                elapsed_time=elapsed_time,
-                                truncate=False,
-                                verbose=VERBOSE
-                               )
+            aux_dw_updates.load(
+                DWO, hostname=config['ETL']['HOST'],
+                elapsed_time=elapsed_time,
+                truncate=False,
+                verbose=VERBOSE
+            )
 
     # Print out elapsed time
     if(VERBOSE):
