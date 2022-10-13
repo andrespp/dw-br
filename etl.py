@@ -69,6 +69,10 @@ if __name__ == '__main__':
     try:
         config = configparser.ConfigParser()
         config.read(CONFIG_FILE)
+        if config.has_option('ETL', 'CHUNKSIZE'):
+            CHUNKSIZE = int(config['ETL']['CHUNKSIZE'])
+        else:
+            CHUNKSIZE = None
     except Exception as e:
         print('ERROR: Unable to read config file ("{}")'.format(CONFIG_FILE))
         traceback.print_exc()
@@ -129,9 +133,7 @@ if __name__ == '__main__':
         ds_list = config['CAGED']['CONJUNTOS'].split(',\n')
         df = stg_caged.extract(ds_list, verbose=VERBOSE)
         df = stg_caged.transform(df, DWO, verbose=VERBOSE)
-        stg_caged.load(DWO, df, verbose=VERBOSE)
-        # print(df)
-        # print(df.columns)
+        stg_caged.load(DWO, df, verbose=VERBOSE, chunksize=CHUNKSIZE)
 
     ### Dimension Tables
     if FULL_DW or ('dim' in TARGETS):

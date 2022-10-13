@@ -5,7 +5,6 @@ import numpy as np
 from unidecode import unidecode
 
 TABLE_NAME = 'stg_caged'
-CHUNKSIZE=10**5
 
 def extract(ds_files, verbose=False):
     """Extract data from source
@@ -80,7 +79,7 @@ def transform(df, dw=None, verbose=False):
 
     return df
 
-def load(dw, df, truncate=False, verbose=False):
+def load(dw, df, truncate=False, verbose=False, chunksize=None):
     """Load data into the Data Warehouse
 
     Parameters
@@ -101,7 +100,7 @@ def load(dw, df, truncate=False, verbose=False):
     if truncate:
         dw.truncate(TABLE_NAME)
 
-    dw.write_table(TABLE_NAME, df)
+    dw.write_table(TABLE_NAME, df, chunksize=chunksize)
 
     if(verbose):
         print('{} registries loaded.\n'.format(len(df)))
