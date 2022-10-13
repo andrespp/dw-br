@@ -87,3 +87,16 @@
         {{ conda_path }}/bin/conda init
         creates={{ conda_path }}/LICENSE.txt
 
+    - name: Donwload DW-BRA
+      git:
+        repo: '{{ dwbra_repo }}'
+        dest: '{{ dwbra_path }}'
+        update: no
+
+    - name: Create conda environment
+      command: >
+        conda env create -f {{ dwbra_path }}/environment.yml
+        creates={{ conda_path }}/envs/dwbra
+
+    # docker-compose up -d
+    # ./get_ds.py && ./extract_ds.py && ./etl.py
