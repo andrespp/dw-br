@@ -18,7 +18,7 @@ datasets = {
 
 def trigger_etl(
         ds_name,
-        run=['aux', 'stg', 'dim', 'fact'],
+        run=['stg', 'dim', 'fact'],
         tables=None,
         verbose=False
     ):
@@ -45,7 +45,7 @@ def trigger_etl(
     """
     from app import CONFIG, DWO, CHUNKSIZE
 
-    # Common
+    # MUNICIPIOS BRASILEIROS
     if ds_name == 'municipios' and (tables is None or ds_name in tables):
         if 'dim' in run:
             df = dim_municipio.extract(CONFIG['MUNICIPIOS']['FILE'], verbose)

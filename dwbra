@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """etl.py
 """
-import os.path
 import time
-import modules.etl as etl
 import app
+import modules.etl as etl
 from modules.cli import args
 from dw import aux_dw_updates
 
@@ -21,38 +20,18 @@ if __name__ == '__main__':
     # Read configuration File
     app.init_app()
 
-    ###########################################################################
     ###### DW Update
-    #
 
     if COMMAND is None or COMMAND == 'all':
 
         for ds in DATASETS: etl.trigger_etl(ds, verbose=app.VERBOSE)
 
-    elif COMMAND == 'stg':
-
-        for ds in DATASETS:
-            etl.trigger_etl(
-                ds, run=['stg'], tables=args.tables, verbose=app.VERBOSE
-            )
-
-    elif COMMAND == 'dim':
-
-        for ds in DATASETS:
-            etl.trigger_etl(
-                ds, run=['dim'], tables=args.tables, verbose=app.VERBOSE
-            )
-
-    elif COMMAND == 'fact':
-
-        for ds in DATASETS:
-            etl.trigger_etl(
-                ds, run=['fact'], tables=args.tables, verbose=app.VERBOSE
-            )
-
     else:
-        # Command not valid
-        exit(-1)
+
+        for ds in DATASETS:
+            etl.trigger_etl(
+                ds, run=[COMMAND], tables=args.tables, verbose=app.VERBOSE
+            )
 
     # Post Processing
     elapsed_time = (time.time() - start_time) / 60
