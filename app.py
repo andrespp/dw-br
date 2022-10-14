@@ -20,7 +20,10 @@ def init_app():
     global DWO
 
     CONFIG_FILE=args.config_file
-    VERBOSE=args.verbose
+    if args.quiet:
+        VERBOSE = False
+    else:
+        VERBOSE = True
 
     if(VERBOSE):
         print("Initizalizating ETL Process with parameters:")
@@ -65,6 +68,3 @@ def init_app():
     # Test if DW's tables exists
     DWO.create_tables(DW_TABLES, verbose=VERBOSE)
 
-# init_app() ######################
-# print(CHUNKSIZE)
-# print(CONFIG)

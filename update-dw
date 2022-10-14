@@ -20,11 +20,14 @@ if __name__ == '__main__':
     # Read configuration File
     app.init_app()
 
-    ###### DW Update
+    if COMMAND is None:
+        COMMAND = 'all'
+        args.tables = 'all'
 
-    if COMMAND is None or COMMAND == 'all':
+    if COMMAND == 'all':
 
-        for ds in DATASETS: etl.trigger_etl(ds, verbose=app.VERBOSE)
+        for ds in DATASETS:
+            etl.trigger_etl(ds, tables=args.tables, verbose=app.VERBOSE)
 
     else:
 

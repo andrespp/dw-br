@@ -19,7 +19,7 @@ datasets = {
 def trigger_etl(
         ds_name,
         run=['stg', 'dim', 'fact'],
-        tables=None,
+        tables='all',
         verbose=False
     ):
     """Trigger ETL process.
@@ -34,7 +34,7 @@ def trigger_etl(
 
         tables | list of strings
             Specify specific datasets
-            default = None
+            default = 'all'
 
         verbose | bool
             default = False
@@ -46,14 +46,14 @@ def trigger_etl(
     from app import CONFIG, DWO, CHUNKSIZE
 
     # MUNICIPIOS BRASILEIROS
-    if ds_name == 'municipios' and (tables is None or ds_name in tables):
+    if ds_name == 'municipios' and (tables=='all' or ds_name in tables):
         if 'dim' in run:
             df = dim_municipio.extract(CONFIG['MUNICIPIOS']['FILE'], verbose)
             df = dim_municipio.transform(df, verbose)
             dim_municipio.load(DWO, df, truncate=True, verbose=verbose)
 
     # CAGED
-    elif ds_name == 'caged' and (tables is None or ds_name in tables):
+    elif ds_name == 'caged' and (tables=='all' or ds_name in tables):
         if 'stg' in run:
             ds_list = CONFIG['CAGED']['CONJUNTOS'].split(',\n')
             df = stg_caged.extract(ds_list, verbose=verbose)

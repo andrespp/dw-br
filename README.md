@@ -59,7 +59,7 @@ conda env create -f environment.yml
 conda activate dwbra
 ./get_ds.py
 ./extract_ds.py
-./etl.py -v -a
+./update-dw.py
 ```
 
 ## Referências
