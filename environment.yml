@@ -18,4 +18,4 @@ dependencies:
   - unidecode
   - pip:
     - py7zr
-    - uetl==0.0.8
+    - uetl==0.0.9
