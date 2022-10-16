@@ -1,6 +1,6 @@
 ---
 - hosts: dwbra
-  become: True
+  gather_facts: true
 
   vars_files:
     - vars.yml
@@ -9,14 +9,24 @@
 
     - name: Update apt cache if needed
       apt:
-       update_cache: True
+       update_cache: true
        cache_valid_time: 3600
+      become: true
 
   tasks:
+
+    # root tasks
+
+    - name: Update root password
+      user:
+        name: root
+        password: "{{ root_password }}"
+      become: true
 
     - name: Upgrade System Packages
       apt:
         upgrade: yes
+      become: true
 
     - name: Install Basic Packages
       apt:
@@ -29,11 +39,13 @@
           - uptimed
           - vim
         state: present
+      become: true
 
     - name: Ensure a locale exists
       locale_gen:
         name: pt_BR.UTF-8
         state: present
+      become: true
 
     - name: Install docker dependencies
       apt:
@@ -43,17 +55,20 @@
           - curl
           - gnupg2
           - software-properties-common
+      become: true
 
     - name: Add docker repository signing key
-      ansible.builtin.apt_key:
+      apt_key:
         url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
         state: present
+      become: true
 
     - name: Add docker repository into sources list
       ansible.builtin.apt_repository:
         repo: "deb [arch={{ apt_arch }}] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
         state: present
         filename: docker
+      become: true
 
     - name: Install docker
       ansible.builtin.apt:
@@ -61,6 +76,17 @@
           - docker-ce
         state: latest
         update_cache: true
+      become: true
+
+    - name: Add unprivileged user to docker group
+      ansible.builtin.user:
+        name: "{{ ansible_ssh_user }}"
+        shell: /bin/bash
+        groups: docker
+        append: yes
+      become: true
+
+    # unprivileged user tasks
 
     - name: Create docker plugins directory
       file:
@@ -95,7 +121,7 @@
 
     - name: Create conda environment
       command: >
-        conda env create -f {{ dwbra_path }}/environment.yml
+        {{ conda_path }}/bin/conda env create -f {{ dwbra_path }}/environment.yml
         creates={{ conda_path }}/envs/dwbra
 
     # docker-compose up -d

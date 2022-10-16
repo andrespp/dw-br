@@ -1,7 +1,9 @@
 [dwbra]
 192.168.6.66
+192.168.6.67
+192.168.6.68
 
 [dwbra:vars]
-ansible_user=root
+ansible_ssh_user=dwbra
 ansible_ssh_private_key=~/.ssh/id_rsa.pub
-ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+ansible_ssh_common_args='-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
