@@ -2,16 +2,24 @@ name: dwbra
 
 channels:
   - conda-forge
+  # - rapidsai
   - defaults
 
 dependencies:
   - python=3.10
+  - dask
+  - dask-sql
+  # - dask-cudf
+  - fastparquet
+  - graphviz
   - numpy
   - openpyxl
   - pandas
   - pip
   - progress
   - psycopg2
+  - pydot
+  - python-graphviz
   - requests
   - sqlalchemy
   - sqlalchemy_schemadisplay

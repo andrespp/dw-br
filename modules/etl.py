@@ -56,7 +56,14 @@ def trigger_etl(
     elif ds_name == 'caged' and (tables=='all' or ds_name in tables):
         if 'stg' in run:
             ds_list = CONFIG['CAGED']['CONJUNTOS'].split(',\n')
-            df = stg_caged.extract(ds_list, verbose=verbose)
-            df = stg_caged.transform(df, DWO, verbose=verbose)
-            stg_caged.load(DWO, df, verbose=verbose, chunksize=CHUNKSIZE)
+
+            # Dask
+            df = stg_caged.extract(ds_list, verbose=verbose, use_dask=True)
+            df = stg_caged.transform(df, DWO, verbose=verbose, use_dask=True)
+            stg_caged.load(DWO, df, verbose=verbose, use_dask=True)
+
+            ## Standard Pandas/Postgres
+            #df = stg_caged.extract(ds_list, verbose=verbose)
+            #df = stg_caged.transform(df, DWO, verbose=verbose)
+            #stg_caged.load(DWO, df, verbose=verbose, chunksize=CHUNKSIZE)
 
