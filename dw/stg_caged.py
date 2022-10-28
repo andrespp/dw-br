@@ -58,7 +58,7 @@ def transform_dask(df, verbose=False):
 
     # Remove special chars and Lowercase columns names
     new_columns = [unidecode(x.lower()) for x in df.columns]
-    df.rename(columns=dict(zip(df.columns, new_columns)))
+    df = df.rename(columns=dict(zip(df.columns, new_columns)))
 
     if(verbose):
         df_len = df.map_partitions(len).compute().sum()
