@@ -53,7 +53,6 @@ def transform_dask(df, verbose=False):
             Data to be tranformed
     """
 
-    print(verbose)##########################
     if(verbose):
         print('{}: (dask)Transform. '.format(TABLE_NAME), end='', flush=True)
 
@@ -67,22 +66,34 @@ def transform_dask(df, verbose=False):
 
     return df
 
-def load_dask(df, verbose=False):
+def load_dask(dw, df, verbose=False):
     """Load data into the Data Warehouse
 
     Parameters
     ----------
+        dw | String
+            Path to parquet files
+
         df | DataFrame
             Data to be loaded
 
         verbose | boolean
     """
+    datadir = dw + '/' + TABLE_NAME
 
     if(verbose):
         print('{}: (dask)Load. '.format(TABLE_NAME), end='', flush=True)
 
+    # Remove old parquet files
+    if verbose:
+        print(f'Removing old parquet files.', end='', flush=True)
+    import os
+    for f in os.listdir(datadir):
+        if f.endswith(".parquet"):
+            os.remove(os.path.join(datadir, f))
 
-    df.to_parquet('data/dw')
+    # Write parquet files
+    df.to_parquet(datadir)
 
     if(verbose):
         df_len = df.map_partitions(len).compute().sum()
@@ -180,8 +191,8 @@ def load(dw, df, truncate=False, verbose=False, chunksize=None, use_dask=False):
 
     Parameters
     ----------
-        dw | DataWarehouse object
-            DataWarehouse object
+        dw | DataWarehouse object or String
+            DataWarehouse object or path to parquet files if use_dask=True
 
         df | Pandas DataFrame
             Data to be loaded
@@ -192,7 +203,7 @@ def load(dw, df, truncate=False, verbose=False, chunksize=None, use_dask=False):
         use_dask : boolean
             Whether to use dask dataframes or plain pandas dataframes.
     """
-    if use_dask: return load_dask(df, verbose)
+    if use_dask: return load_dask(dw, df, verbose)
 
     if(verbose):
         print('{}: Load. '.format(TABLE_NAME), end='', flush=True)

@@ -60,7 +60,9 @@ def trigger_etl(
             # Dask
             df = stg_caged.extract(ds_list, verbose=verbose, use_dask=True)
             df = stg_caged.transform(df, DWO, verbose=verbose, use_dask=True)
-            stg_caged.load(DWO, df, verbose=verbose, use_dask=True)
+            stg_caged.load(
+                CONFIG['DWP']['DATADIR'], df, verbose=verbose, use_dask=True
+            )
 
             ## Standard Pandas/Postgres
             #df = stg_caged.extract(ds_list, verbose=verbose)
