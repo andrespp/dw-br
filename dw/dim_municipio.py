@@ -2,23 +2,30 @@
 """
 import pandas as pd
 import numpy as np
+import dask.dataframe as dd
 
 TABLE_NAME = 'dim_municipio'
 
-def extract(data_src, verbose=False):
+###############################################################################
+# Extract functions
+###############################################################################
+def extract(ds_files, target, verbose=False):
     """Extract data from source
 
     Parameters
     ----------
-        data_src | XLS filename
+        ds_files | cvs list of filenames
+
+        target | string
+            DW's load target. Options are 'parquet', 'postgres', 'sample'
 
     Returns
     -------
-        data : Pandas DataFrame
+        data : Pandas or Dask DataFrame
             Extracted Data
     """
     if(verbose):
-        print('{}: Extract. '.format(TABLE_NAME), end='', flush=True)
+        print(f'{TABLE_NAME}: Extract. ', end='', flush=True)
 
     dtype={'CÓDIGO SIAFI':int,
            'CNPJ':str,
@@ -27,28 +34,59 @@ def extract(data_src, verbose=False):
            'CÓDIGO IBGE':int}
 
     cols = ['CÓDIGO SIAFI', 'CNPJ', 'DESCRIÇÃO', 'UF', 'CÓDIGO IBGE']
-    df = pd.read_csv(data_src, names=cols, sep=';', encoding='latin1'
-    )
+
+    # Extract by target
+    if target in ['parquet', 'postgres']:
+
+        if target == 'parquet' and verbose:
+            print('(dask) ', end='', flush=True)
+
+        # Data fits in memory, using Pandas
+        df = pd.read_csv(
+            ds_files, names=cols, sep=';', encoding='latin1', dtype=dtype,
+        )
+        df_len = len(df)
+
+    else:
+        if (verbose):
+            print('WARN: Target not implemented, skipping.')
+        return pd.DataFrame()
 
     if(verbose):
-        print('{} registries extracted.'.format(len(df)))
+        print('{} registries extracted.'.format(df_len))
 
     return df
 
-def transform(df, verbose=False):
+###############################################################################
+# Transform functions
+###############################################################################
+def transform(df, target, dw=None, verbose=False):
     """Transform data
 
     Parameters
     ----------
         df | Pandas DataFrame
 
+        target | string
+            DW's load target. Options are 'parquet', 'postgres', 'sample'
+
+        dw | DataWarehouse Object
+            Object to be used in data lookups
+
     Returns
     -------
-        data : Pandas DataFrame
+        data | Pandas or DataFrame
             Data to be tranformed
     """
+    if target not in ['postgres', 'parquet']:
+        if (verbose):
+            print('WARN: Target not implemented, skipping.')
+        return pd.DataFrame()
+
     if(verbose):
         print('{}: Transform. '.format(TABLE_NAME), end='', flush=True)
+        if target=='parquet':
+            print('(dask) ', end='', flush=True)
 
     # Rename Columns
     df.rename(index=str,
@@ -75,7 +113,10 @@ def transform(df, verbose=False):
 
     return df
 
-def load(dw, df, truncate=False, verbose=False):
+###############################################################################
+# Load functions
+###############################################################################
+def load(dw, df, target, truncate=False, verbose=False):
     """Load data into the Data Warehouse
 
     Parameters
@@ -86,17 +127,38 @@ def load(dw, df, truncate=False, verbose=False):
         df | Pandas DataFrame
             Data to be loaded
 
+        target | string
+            DW's load target. Options are 'parquet', 'postgres', 'sample'
+
         truncate | boolean
             If true, truncate table before loading data
     """
-    if(verbose):
-        print('{}: Load. '.format(TABLE_NAME), end='', flush=True)
+    if target=='parquet':
 
-    # Truncate table
-    if truncate:
-        dw.truncate(TABLE_NAME, cascade=True)
+        if(verbose):
+            print('(dask) ', end='', flush=True)
 
-    dw.write(TABLE_NAME, df)
+        datadir = dw + '/' + TABLE_NAME
+
+        # Write parquet files
+        dd.from_pandas(df, npartitions=1).to_parquet(datadir)
+        # df.to_parquet(datadir)
+
+    elif target=='postgres':
+
+        if(verbose):
+            print('{}: Load. '.format(TABLE_NAME), end='', flush=True)
+
+        # Truncate table
+        if truncate:
+            dw.truncate(TABLE_NAME, cascade=True)
+
+            dw.write(TABLE_NAME, df)
+
+    else:
+        if (verbose):
+            print('WARN: Target not implemented, skipping.')
+
 
     if(verbose):
         print('{} registries loaded.\n'.format(len(df)))

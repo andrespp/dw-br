@@ -11,6 +11,15 @@ parser = argparse.ArgumentParser(description="DWBRA's ETL Process")
 
 # Arguments
 parser.add_argument(
+    '--target',
+    type=str,
+    default='parquet',
+    help="DW's load target",
+    metavar='parquet',
+    choices=['parquet', 'postgres', 'sample'],
+
+)
+parser.add_argument(
     '-c',
     '--config-file',
     type=str,

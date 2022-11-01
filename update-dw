@@ -27,13 +27,16 @@ if __name__ == '__main__':
     if COMMAND == 'all':
 
         for ds in DATASETS:
-            etl.trigger_etl(ds, tables=args.tables, verbose=app.VERBOSE)
+            etl.trigger_etl(
+                ds, args.target, tables=args.tables, verbose=app.VERBOSE
+            )
 
     else:
 
         for ds in DATASETS:
             etl.trigger_etl(
-                ds, run=[COMMAND], tables=args.tables, verbose=app.VERBOSE
+                ds, args.target, run=[COMMAND], tables=args.tables,
+                verbose=app.VERBOSE
             )
 
     # Post Processing
