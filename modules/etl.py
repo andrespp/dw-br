@@ -19,6 +19,7 @@ datasets = {
 def trigger_etl(
         ds_name,
         target,
+        no_sample=False,
         run=['stg', 'dim', 'fact'],
         tables='all',
         verbose=False,
@@ -36,6 +37,9 @@ def trigger_etl(
         target | string
             DW's load target. Options are 'parquet', 'postgres', 'sample'
 
+        no_sample | bool
+            Don't build sample DW. Default = False
+
         tables | list of strings
             Specify specific datasets
             default = 'all'
@@ -52,10 +56,16 @@ def trigger_etl(
     # Target object
     if target=='parquet':
         DW = CONFIG['DWP']['DATADIR']
-    elif target in ['postgres', 'sample']:
+        DW_SAMPLE = DWO
+    elif target in ['postgres']:
         DW = DWO
+        DW_SAMPLE = None
+        if not no_sample:
+            no_sample = True
+            print('WARN: Full DB will be written to postgres, not sample db.')
     else:
         DW = None
+        DW_SAMPLE = None
         print('WARN: Target not implemented')
 
     # MUNICIPIOS BRASILEIROS
@@ -76,4 +86,9 @@ def trigger_etl(
             df = stg_caged.extract(ds_list, target, verbose=verbose)
             df = stg_caged.transform(df, target, DW, verbose=verbose)
             stg_caged.load(DW, df, target, verbose=verbose)
+            if not no_sample:
+                stg_caged.load_sample(
+                    DW_SAMPLE, df, truncate=True, verbose=verbose
+                )
+            if verbose: print()
 

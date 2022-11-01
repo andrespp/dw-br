@@ -286,7 +286,7 @@ def load_dask(dw, df, verbose=False):
     datadir = dw + '/' + TABLE_NAME
 
     if(verbose):
-        print(f'{TABLE_NAME}: (dask)Load. ', end='', flush=True)
+        print(f'(dask). ', end='', flush=True)
 
     # Remove old parquet files
     if verbose:
@@ -304,7 +304,47 @@ def load_dask(dw, df, verbose=False):
 
     if(verbose):
         df_len = df.map_partitions(len).compute().sum()
-        print(f'{df_len} registries loaded.\n')
+        print(f'{df_len} registries loaded.')
 
     return
 
+def load_sample(dw, df, frac=0.01, truncate=False, verbose=False, chunksize=None):
+    """Load data into the Data Warehouse
+
+    Parameters
+    ----------
+        dw | DataWarehouse object or String
+            DataWarehouse object or path to parquet files
+
+        df | Pandas or Dask DataFrame
+            Data to be loaded
+
+        frac | integer between 0 and 1
+            Fraction of table to be sampled
+
+        truncate | boolean
+            If true, truncate table before loading data
+
+        verbose | boolean
+
+        chunksize | int
+    """
+    if(verbose):
+        print(f'{TABLE_NAME}: Load. (sample db) ', end='', flush=True)
+
+    if not (0 <= frac <=1):
+        raise ValueError
+
+    # retrieve sample data
+    dfs = df.sample(frac=frac).compute()
+
+    # Truncate table
+    if truncate:
+        dw.truncate(TABLE_NAME)
+
+    dw.write_table(TABLE_NAME, dfs, chunksize=chunksize)
+
+    if(verbose):
+        print(f'{len(dfs)} registries loaded.')
+
+    return

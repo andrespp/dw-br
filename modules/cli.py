@@ -16,8 +16,13 @@ parser.add_argument(
     default='parquet',
     help="DW's load target",
     metavar='parquet',
-    choices=['parquet', 'postgres', 'sample'],
+    choices=['parquet', 'postgres'],
 
+)
+parser.add_argument(
+    '--no-sample',
+    action='store_true',
+    help="do not update sample db",
 )
 parser.add_argument(
     '-c',
