@@ -133,6 +133,9 @@ def load(dw, df, target, truncate=False, verbose=False):
         truncate | boolean
             If true, truncate table before loading data
     """
+    if(verbose):
+        print('{}: Load. '.format(TABLE_NAME), end='', flush=True)
+
     if target=='parquet':
 
         if(verbose):
@@ -142,12 +145,8 @@ def load(dw, df, target, truncate=False, verbose=False):
 
         # Write parquet files
         dd.from_pandas(df, npartitions=1).to_parquet(datadir)
-        # df.to_parquet(datadir)
 
     elif target=='postgres':
-
-        if(verbose):
-            print('{}: Load. '.format(TABLE_NAME), end='', flush=True)
 
         # Truncate table
         if truncate:
