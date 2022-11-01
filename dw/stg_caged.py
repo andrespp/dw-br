@@ -232,7 +232,9 @@ def load(dw, df, target, truncate=False, verbose=False, chunksize=None):
     if target=='parquet':
         return load_dask(dw, df, verbose=verbose)
     elif target=='postgres':
-        return load_postgres(dw, df, verbose, chunksize)
+        return load_postgres(
+            dw, df, truncate=truncate, verbose=verbose, chunksize=chunksize
+        )
     else:
         if (verbose):
             print('WARN: Target not implemented, skipping.')
@@ -288,11 +290,14 @@ def load_dask(dw, df, verbose=False):
 
     # Remove old parquet files
     if verbose:
-        print(f'Removing old parquet files.', end='', flush=True)
+        print(f'Removing old parquet files. ', end='', flush=True)
     import os
-    for f in os.listdir(datadir):
-        if f.endswith(".parquet"):
-            os.remove(os.path.join(datadir, f))
+    try:
+        for f in os.listdir(datadir):
+            if f.endswith(".parquet"):
+                os.remove(os.path.join(datadir, f))
+    except FileNotFoundError:
+        pass
 
     # Write parquet files
     df.to_parquet(datadir)
