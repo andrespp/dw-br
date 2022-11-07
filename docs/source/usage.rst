@@ -1,34 +1,29 @@
-Usage
-=====
+Utilização do *Data Warehouse*
+==============================
 
 .. _installation:
 
-Installation
-------------
+Instância local
+----------------
 
-To use Lumache, first install it using pip:
+Para definir uma instância local do ``DW-BR`` deve-se clonar o repositório e
+rodar os scripts de ETL da ferramenta:
 
 .. code-block:: console
 
-   (.venv) $ pip install lumache
+   $ git clone git@github.com:andrespp/dw-bra.git
+   $ cd dw-bra/
+   $ docker compose up -d
+   $ conda activate dwbra && ./get_ds.py && ./extract_ds.py && ./update-dw
 
-Creating recipes
-----------------
+Instância pública
+-----------------
 
-To retrieve a list of random ingredients,
-you can use the ``lumache.get_random_ingredients()`` function:
+>>> import dask.dataframe as dd
+>>> df = dd.read_parquet('s3://bucket/my-parquet-data')
 
-.. autofunction:: lumache.get_random_ingredients
+Ferramenta de Visualização Dash DW-BR
+-------------------------------------
 
-The ``kind`` parameter should be either ``"meat"``, ``"fish"``,
-or ``"veggies"``. Otherwise, :py:func:`lumache.get_random_ingredients`
-will raise an exception.
-
-.. autoexception:: lumache.InvalidKindError
-
-For example:
-
->>> import lumache
->>> lumache.get_random_ingredients()
-['shells', 'gorgonzola', 'parsley']
+TBD
 
