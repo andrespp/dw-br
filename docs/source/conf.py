@@ -1,5 +1,4 @@
 # Configuration file for the Sphinx documentation builder.
-
 # -- Project information
 
 project = 'DW-BR'
@@ -17,6 +16,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
+    'myst-parser',
 ]
 
 intersphinx_mapping = {

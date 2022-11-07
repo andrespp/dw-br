@@ -1,10 +1,9 @@
-Welcome to Lumache's documentation!
-===================================
+Documentação do DW-BR
+=====================
 
-**Lumache** (/lu'make/) is a Python library for cooks and food lovers
-that creates recipes mixing random ingredients.
-It pulls data from the `Open Food Facts database <https://world.openfoodfacts.org/>`_
-and offers a *simple* and *intuitive* API.
+**DW-BR** é uma armazém de dados públicos, que utilizada modelagem dimensional
+e ferramentas de *big data*  com objetivo de fornecer acesso integrado, simples
+e intuitivo a conjuntos de dados públicos brasileiros.
 
 Check out the :doc:`usage` section for further information, including
 how to :ref:`installation` the project.
