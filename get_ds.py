@@ -9,11 +9,16 @@ from urllib.request import urlretrieve
 from progress.bar import Bar
 from progress.spinner import Spinner
 
-DATASRC_DIR = './datasrc'
-DATASET_DIR = './dataset'
 DATASET_LIST = './datasets.csv'
+DATASRC_DIR = './data/src'
+DATASET_DIR = './data/raw'
+
+HEADERS = {
+    'user-agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36'
+}
 
 class Fetcher:
+
     def check_hash(self, filename, dhash='md5'):
         '''Compute file hash
         '''
@@ -37,9 +42,35 @@ class Fetcher:
         return fhash.hexdigest()
 
     def get(self, url, fname=False):
+        '''Download file from url (using requests, then urllib in case of error)
+
+        Parameters
+        ----------
+            url | string
+
+            fname | str (optional)
+                Destination filename. If not defined, original name will be used
+        '''
+        try:
+            fname = self.get_requests(url, fname)
+
+        except Exception as e:
+
+            print(f'Unable to download using requests lib: {e}. Trying urllibs')
+
+            try:
+                fname = self.get_urllib(url, fname)
+
+            except Exception as e2:
+                print(f'Unable to download using urllib: {e2}. Giving up!')
+                fname = None
+
+        return fname
+
+    def get_requests(self, url, fname=False):
         '''Download file from url using requests library
         '''
-        r = requests.get(url, stream=True, verify=False)
+        r = requests.get(url, stream=True, verify=False, headers=HEADERS)
         size = r.headers['content-length']
         if not fname:
             fname = url.split('/')[-1]
@@ -106,11 +137,11 @@ if __name__ == '__main__':
             if fhash != ds['hash_md5']:
                 print(f'WARN: Arquivo {ds["id"]}-{fname} corrompido! Baixando.'
                       'novamente ', flush=True)
-                Fetcher().get_urllib(ds['url'], fname)
+                Fetcher().get(ds['url'], fname)
             else:
                 print(f'Arquivo {ds["id"]}-{fname} íntegro. Download ignorado.')
         else:
             print(f'Arquivo {ds["id"]}-{fname} não localizado. '
                    'Iniciando Download.', flush=True)
-            Fetcher().get_urllib(ds['url'], fname)
+            Fetcher().get(ds['url'], fname)
 
