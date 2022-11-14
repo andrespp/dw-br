@@ -52,17 +52,17 @@ class Fetcher:
                 Destination filename. If not defined, original name will be used
         '''
         try:
-            fname = self.get_requests(url, fname)
+            fname = self.get_urllib(url, fname)
 
         except Exception as e:
 
-            print(f'Unable to download using requests lib: {e}. Trying urllibs')
+            print(f'Unable to download using urllib: {e}. Trying requests lib')
 
             try:
-                fname = self.get_urllib(url, fname)
+                fname = self.get_requests(url, fname)
 
             except Exception as e2:
-                print(f'Unable to download using urllib: {e2}. Giving up!')
+                print(f'Unable to download using requests: {e2}. Giving up!')
                 fname = None
 
         return fname
