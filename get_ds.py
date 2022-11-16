@@ -126,20 +126,33 @@ class Fetcher:
 if __name__ == '__main__':
 
     df = pd.read_csv(DATASET_LIST)
-    df['download'] = df['download'].apply(lambda x:
-                                          True if x.upper()=='S' else False)
+    df['download'] = df['download'].apply(
+        lambda x: True if x.upper()=='S' else False
+    )
 
     for index, ds in df[df['download']].iterrows():
-        fname = DATASRC_DIR + '/' + ds['arquivo']
 
+        path = DATASRC_DIR + '/' + ds['nome'].lower()
+        fname = path + '/' + ds['arquivo']
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+        # File exists
         if os.path.isfile(fname):
+
             fhash = Fetcher().check_hash(fname)
+
+            # Corrupted, downloading again
             if fhash != ds['hash_md5']:
                 print(f'WARN: Arquivo {ds["id"]}-{fname} corrompido! Baixando.'
                       'novamente ', flush=True)
                 Fetcher().get(ds['url'], fname)
+
+            # Not-corrupted, skiping
             else:
                 print(f'Arquivo {ds["id"]}-{fname} íntegro. Download ignorado.')
+
+        # File don't exist, downloading
         else:
             print(f'Arquivo {ds["id"]}-{fname} não localizado. '
                    'Iniciando Download.', flush=True)
