@@ -16,6 +16,7 @@ dependencies:
   - openpyxl
   - pandas
   - pip
+  - prefect
   - progress
   - psycopg2
   - pydot
@@ -25,5 +26,6 @@ dependencies:
   - sqlalchemy_schemadisplay
   - unidecode
   - pip:
+    - prefect-dask
     - py7zr
     - uetl==0.0.9
