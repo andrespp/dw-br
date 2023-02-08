@@ -1,9 +1,9 @@
-[dwbra]
-192.168.6.66
-192.168.6.67
-192.168.6.68
+[dwbr]
+dwbr-prod
+dwbr-test
+dwbr-dev
 
-[dwbra:vars]
-ansible_ssh_user=dwbra
+[dwbr:vars]
+ansible_ssh_user=dwbr
 ansible_ssh_private_key=~/.ssh/id_rsa.pub
 ansible_ssh_common_args='-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
