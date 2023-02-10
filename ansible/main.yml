@@ -38,6 +38,7 @@
           - screen
           - uptimed
           - vim
+          - tree
         state: present
       become: true
 
