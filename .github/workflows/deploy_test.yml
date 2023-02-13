@@ -1,0 +1,53 @@
+name: Deploy to test VM
+
+on:
+  push:
+    branches: [ "test" ]
+  pull_request:
+    branches: [ "test" ]
+
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy to test VM using ssh-action
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.TEST_HOST }}
+        username: ${{ secrets.TEST_HOST_USERNAME }}
+        key: ${{ secrets.TEST_HOST_KEY}}
+        port: ${{ secrets.TEST_HOST_PORT }}
+        shell: bash -l {0}
+        script: |
+          GIT_REPO=git@github.com:andrespp/dw-br.git
+          GIT_BRANCH=test
+          APP_PATH=~/dw-br
+          CONDA_ENV=dwbra
+
+          # Check if repo exists, then stop and achive it
+          if [ -d $APP_PATH ] ; then
+            cd $APP_PATH
+            docker compose down
+            cd ~/
+            mv $APP_PATH "$APP_PATH"_`date  +%F_%N`
+          fi
+
+          # Clone repo
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+          git clone $GIT_REPO $APP_PATH
+          cd $APP_PATH
+          git checkout $GIT_BRANCH
+
+          # Remove Conda environment if it exists
+          if [ -d $CONDA_PREFIX/envs/$CONDA_ENV ] ; then
+            conda env remove -n $CONDA_ENV
+          fi
+
+          # Run ETL
+          docker compose up -d
+          conda env create -f environment.yml
+          conda activate $CONDA_ENV
+          ./get_ds.py && ./extract_ds.py && ./update-dw
