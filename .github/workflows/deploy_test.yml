@@ -47,7 +47,8 @@ jobs:
           fi
 
           # Run ETL
+          echo $CONDA_PREFIX
           docker compose up -d
-          conda env create -f environment.yml
-          conda activate $CONDA_ENV
+          $CONDA_PREFIX/bin/conda env create -f environment.yml
+          $CONDA_PREFIX/bin/conda activate $CONDA_ENV
           ./get_ds.py && ./extract_ds.py && ./update-dw
