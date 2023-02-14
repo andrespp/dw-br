@@ -31,7 +31,7 @@ extractds:
 
 .PHONY: run
 run:
-	docker run --rm -v $(PWD):/usr/src/app $(IMAGE_NAME) ./etl.py -v -a
+	docker run --rm -v $(PWD):/usr/src/app $(IMAGE_NAME) ./update-dw
 
 .PHONY: runi
 runi:
