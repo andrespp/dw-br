@@ -19,7 +19,6 @@ jobs:
         username: ${{ secrets.TEST_HOST_USERNAME }}
         key: ${{ secrets.TEST_HOST_KEY}}
         port: ${{ secrets.TEST_HOST_PORT }}
-        shell: bash -l {0}
         script: |
           GIT_REPO=git@github.com:andrespp/dw-br.git
           GIT_BRANCH=test
@@ -37,18 +36,12 @@ jobs:
           # Clone repo
           ssh-keyscan github.com >> ~/.ssh/known_hosts
           GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
-          git clone $GIT_REPO $APP_PATH
+          git clone --branch $GIT_BRANCH $GIT_REPO $APP_PATH
           cd $APP_PATH
-          git checkout $GIT_BRANCH
-
-          # Remove Conda environment if it exists
-          if [ -d $CONDA_PREFIX/envs/$CONDA_ENV ] ; then
-            conda env remove -n $CONDA_ENV
-          fi
 
           # Run ETL
-          echo $CONDA_PREFIX
           docker compose up -d
-          $CONDA_PREFIX/bin/conda env create -f environment.yml
-          $CONDA_PREFIX/bin/conda activate $CONDA_ENV
-          ./get_ds.py && ./extract_ds.py && ./update-dw
+          make setup
+          make getds
+          make extractds
+          make run
