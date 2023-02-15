@@ -17,6 +17,7 @@ jobs:
         username: ${{ secrets.PROD_HOST_USERNAME }}
         key: ${{ secrets.PROD_HOST_KEY}}
         port: ${{ secrets.PROD_HOST_PORT }}
+        command_timeout: 120m
         script: |
           GIT_REPO=git@github.com:andrespp/dw-br.git
           GIT_BRANCH=master
