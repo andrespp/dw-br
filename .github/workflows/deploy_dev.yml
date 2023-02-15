@@ -1,0 +1,48 @@
+name: Deploy to dev VM
+
+on:
+  push:
+    branches: [ "dev" ]
+  pull_request:
+    branches: [ "dev" ]
+
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy to dev VM using ssh-action
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.DEV_HOST }}
+        username: ${{ secrets.DEV_HOST_USERNAME }}
+        key: ${{ secrets.DEV_HOST_KEY}}
+        port: ${{ secrets.DEV_HOST_PORT }}
+        command_timeout: 120m
+        script: |
+          GIT_REPO=git@github.com:andrespp/dw-br.git
+          GIT_BRANCH=dev
+          APP_PATH=~/dw-br
+          CONDA_ENV=dwbra
+
+          # Check if repo exists, then stop and achive it
+          if [ -d $APP_PATH ] ; then
+            cd $APP_PATH
+            docker compose down
+            cd ~/
+            mv $APP_PATH "$APP_PATH"_`date  +%F_%N`
+          fi
+
+          # Clone repo
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+          git clone --branch $GIT_BRANCH $GIT_REPO $APP_PATH
+          cd $APP_PATH
+
+          # Run ETL
+          docker compose up -d
+          make setup
+          make getds
+          make extractds
+          make run
