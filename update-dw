@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+"""etl.py
+"""
+import time
+import app
+import modules.etl as etl
+from modules.cli import args
+from dw import aux_dw_updates
+
+# Track execution time
+start_time = time.time()
+
+# Script setup
+# CONFIG_FILE=args.config_file
+COMMAND=args.subparser_name
+DATASETS=etl.datasets
+
+if __name__ == '__main__':
+
+    # Read configuration File
+    app.init_app()
+
+    if COMMAND is None:
+        COMMAND = 'all'
+        args.tables = 'all'
+
+    if COMMAND == 'all':
+
+        for ds in DATASETS:
+            etl.trigger_etl(
+                ds, args.target, no_sample=args.no_sample,
+                tables=args.tables, verbose=app.VERBOSE
+            )
+
+    else:
+
+        for ds in DATASETS:
+            etl.trigger_etl(
+                ds, args.target, no_sample=args.no_sample, run=[COMMAND],
+                tables=args.tables, verbose=app.VERBOSE
+            )
+
+    # Post Processing
+    elapsed_time = (time.time() - start_time) / 60
+    if(app.VERBOSE): print("\n# Building auxiliary tables")
+    aux_dw_updates.load(
+                app.DWO, hostname=app.CONFIG['ETL']['HOST'],
+                elapsed_time=elapsed_time,
+                truncate=False,
+                verbose=app.VERBOSE
+            )
+
+    # Print out elapsed time
+    if(app.VERBOSE):
+        print("\nExecution time: {0:0.4f} minutes.".format(elapsed_time))

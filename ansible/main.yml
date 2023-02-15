@@ -1,0 +1,141 @@
+---
+- hosts: dwbr
+  gather_facts: true
+
+  vars_files:
+    - vars.yml
+
+  pre_tasks:
+
+    - name: Update apt cache if needed
+      apt:
+       update_cache: true
+       cache_valid_time: 3600
+      become: true
+
+  tasks:
+
+    # root tasks
+
+    - name: Update root password
+      user:
+        name: root
+        password: "{{ root_password }}"
+      become: true
+
+    - name: Upgrade System Packages
+      apt:
+        upgrade: yes
+      become: true
+
+    - name: Install Basic Packages
+      apt:
+        name:
+          - htop
+          - iotop
+          - locales
+          - net-tools
+          - screen
+          - uptimed
+          - vim
+          - tree
+        state: present
+      become: true
+
+    - name: Ensure a locale exists
+      locale_gen:
+        name: pt_BR.UTF-8
+        state: present
+      become: true
+
+    - name: Install docker dependencies
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg2
+          - software-properties-common
+      become: true
+
+    - name: Add docker repository signing key
+      apt_key:
+        url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
+        state: present
+      become: true
+
+    - name: Add docker repository into sources list
+      ansible.builtin.apt_repository:
+        repo: "deb [arch={{ apt_arch }}] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
+        state: present
+        filename: docker
+      become: true
+
+    - name: Install docker
+      ansible.builtin.apt:
+        name:
+          - docker-ce
+        state: latest
+        update_cache: true
+      become: true
+
+    - name: Add unprivileged user to docker group
+      ansible.builtin.user:
+        name: "{{ ansible_ssh_user }}"
+        shell: /bin/bash
+        groups: docker
+        append: yes
+      become: true
+
+    # unprivileged user tasks
+
+    - name: Create docker plugins directory
+      file:
+        path: ~/.docker/cli-plugins
+        state: directory
+
+    - name: Download docker compose
+      get_url:
+        url: "https://github.com/docker/compose/releases/download/v{{ compose_version }}/{{ compose_file }}"
+        dest: "~/.docker/cli-plugins/docker-compose"
+        checksum: "{{ compose_checksum }}"
+        mode: u+x
+
+    - name: Download miniconda
+      get_url:
+        url: "https://repo.anaconda.com/miniconda/Miniconda3-{{ conda_version }}-{{ conda_arch }}.sh"
+        dest: "{{ download_dir }}/miniconda.sh"
+        checksum: "{{ conda_checksum }}"
+        mode: u+x
+
+    - name: Install miniconda
+      shell: >
+        bash {{ download_dir }}/miniconda.sh -bfp {{ conda_path }} &&
+        {{ conda_path }}/bin/conda init
+        creates={{ conda_path }}/LICENSE.txt
+
+    - name: Download DW-BR
+      git:
+        repo: '{{ dwbr_repo }}'
+        dest: '{{ dwbr_path }}'
+        update: no
+
+    - name: Create conda environment
+      command: >
+        {{ conda_path }}/bin/conda env create -f {{ dwbr_path }}/environment.yml
+        creates={{ conda_path }}/envs/dwbra
+
+    - name: Install Development Packages
+      apt:
+        name:
+          - build-essential
+          - unixodbc-dev
+          - python3-psycopg2
+          - libpq-dev
+          - python3-gv
+          - graphviz
+        state: present
+      become: true
+
+    # docker-compose up -d
+    # ./get_ds.py && ./extract_ds.py && ./etl.py
