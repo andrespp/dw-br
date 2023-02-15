@@ -41,3 +41,6 @@ conda activate dwbra && ./get_ds.py && ./extract_ds.py && ./update-dw
 ```
 
 ## Referências
+
+* [PDET - Programa de Disseminação das Estatísticas do Trabalho](http://pdet.mte.gov.br/)
+* [PDET - Microdados (FTP)](ftp://ftp.mtps.gov.br/pdet/microdados/)
