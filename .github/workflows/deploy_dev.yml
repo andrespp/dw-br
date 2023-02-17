@@ -28,14 +28,15 @@ jobs:
         port: ${{ secrets.DEV_HOST_PORT }}
         command_timeout: 120m
         envs: GIT_REPO, GIT_BRANCH, APP_PATH, CONDA_ENV, SHA
+        script_stop: true
         script: |
 
           # Echo env variables
-          echo $GIT_REPO
-          echo $GIT_BRANCH
-          echo $APP_PATH
-          echo $CONDA_ENV
-          echo $SHA
+          echo GIT_REPO: $GIT_REPO
+          echo GIT_BRANCH: $GIT_BRANCH
+          echo APP_PATH: $APP_PATH
+          echo CONDA_ENV: $CONDA_ENV
+          echo SHA: $SHA
 
           # Check if repo exists, then update repo
           if [ -d $APP_PATH ] ; then
