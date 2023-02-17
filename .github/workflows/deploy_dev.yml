@@ -6,6 +6,13 @@ on:
   pull_request:
     branches: [ "dev" ]
 
+env:
+  GIT_REPO: "git@github.com:andrespp/dw-br.git"
+  GIT_BRANCH: "dev"
+  APP_PATH: "~/dw-br"
+  CONDA_ENV: "dwbra"
+  SHA: ${{ github.sha }}
+
 jobs:
 
   build:
@@ -20,11 +27,12 @@ jobs:
         key: ${{ secrets.DEV_HOST_KEY}}
         port: ${{ secrets.DEV_HOST_PORT }}
         command_timeout: 120m
+        envs: GIT_REPO, GIT_BRANCH, APP_PATH, CONDA_ENV, SHA
         script: |
-          GIT_REPO=git@github.com:andrespp/dw-br.git
-          GIT_BRANCH=dev
-          APP_PATH=~/dw-br
-          CONDA_ENV=dwbra
+          # GIT_REPO=git@github.com:andrespp/dw-br.git
+          # GIT_BRANCH=dev
+          # APP_PATH=~/dw-br
+          # CONDA_ENV=dwbra
 
           # Check if repo exists, then update repo
           if [ -d $APP_PATH ] ; then
