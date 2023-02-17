@@ -18,8 +18,10 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+
     steps:
-    - name: Deploy to dev VM using ssh-action
+
+    - name: Update GIT repository and start backend db
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.DEV_HOST }}
@@ -38,29 +40,108 @@ jobs:
           echo CONDA_ENV: $CONDA_ENV
           echo SHA: $SHA
 
-          # Check if repo exists, then update repo
+          # Check if repo exists, then update or clone it
           if [ -d $APP_PATH ] ; then
             cd $APP_PATH
             git pull origin $GIT_BRANCH
-            # Run ETL
-            make setup
-            make getds
-            make extractds
-            make run
 
-          else # Build from scratch
+          else # Clone repo and start postgres
 
             # Clone repo
             ssh-keyscan github.com >> ~/.ssh/known_hosts
             GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
             git clone --branch $GIT_BRANCH $GIT_REPO $APP_PATH
-            cd $APP_PATH
 
-            # Run ETL
+            # start postgres
             docker compose up -d
-            make setup
-            make getds
-            make extractds
-            make run
+
           fi
+
+    - name: Build DW-BR Docker image
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.DEV_HOST }}
+        username: ${{ secrets.DEV_HOST_USERNAME }}
+        key: ${{ secrets.DEV_HOST_KEY}}
+        port: ${{ secrets.DEV_HOST_PORT }}
+        command_timeout: 120m
+        envs: GIT_REPO, GIT_BRANCH, APP_PATH, CONDA_ENV, SHA
+        script_stop: true
+        script: |
+
+          # Echo env variables
+          echo GIT_REPO: $GIT_REPO
+          echo GIT_BRANCH: $GIT_BRANCH
+          echo APP_PATH: $APP_PATH
+          echo CONDA_ENV: $CONDA_ENV
+          echo SHA: $SHA
+
+          cd $APP_PATH
+          make setup
+
+    - name: Run get-ds
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.DEV_HOST }}
+        username: ${{ secrets.DEV_HOST_USERNAME }}
+        key: ${{ secrets.DEV_HOST_KEY}}
+        port: ${{ secrets.DEV_HOST_PORT }}
+        command_timeout: 120m
+        envs: GIT_REPO, GIT_BRANCH, APP_PATH, CONDA_ENV, SHA
+        script_stop: true
+        script: |
+
+          # Echo env variables
+          echo GIT_REPO: $GIT_REPO
+          echo GIT_BRANCH: $GIT_BRANCH
+          echo APP_PATH: $APP_PATH
+          echo CONDA_ENV: $CONDA_ENV
+          echo SHA: $SHA
+
+          cd $APP_PATH
+          make getds
+
+    - name: Run extract-ds
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.DEV_HOST }}
+        username: ${{ secrets.DEV_HOST_USERNAME }}
+        key: ${{ secrets.DEV_HOST_KEY}}
+        port: ${{ secrets.DEV_HOST_PORT }}
+        command_timeout: 120m
+        envs: GIT_REPO, GIT_BRANCH, APP_PATH, CONDA_ENV, SHA
+        script_stop: true
+        script: |
+
+          # Echo env variables
+          echo GIT_REPO: $GIT_REPO
+          echo GIT_BRANCH: $GIT_BRANCH
+          echo APP_PATH: $APP_PATH
+          echo CONDA_ENV: $CONDA_ENV
+          echo SHA: $SHA
+
+          cd $APP_PATH
+          make extractds
+
+    - name: Run ETL
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.DEV_HOST }}
+        username: ${{ secrets.DEV_HOST_USERNAME }}
+        key: ${{ secrets.DEV_HOST_KEY}}
+        port: ${{ secrets.DEV_HOST_PORT }}
+        command_timeout: 120m
+        envs: GIT_REPO, GIT_BRANCH, APP_PATH, CONDA_ENV, SHA
+        script_stop: true
+        script: |
+
+          # Echo env variables
+          echo GIT_REPO: $GIT_REPO
+          echo GIT_BRANCH: $GIT_BRANCH
+          echo APP_PATH: $APP_PATH
+          echo CONDA_ENV: $CONDA_ENV
+          echo SHA: $SHA
+
+          cd $APP_PATH
+          make run
 
