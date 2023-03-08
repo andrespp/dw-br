@@ -1,21 +1,28 @@
 #!/usr/bin/env python3
-import ssl
-import os.path
 import hashlib
-import requests
+import json
+import logging
+import os.path
 import pandas as pd
+import requests
+import ssl
 import urllib
 from urllib.request import urlretrieve
 from progress.bar import Bar
 from progress.spinner import Spinner
 
-DATASET_LIST = './datasets.csv'
+DATASET_LIST = './data/datasets.json'
 DATASRC_DIR = './data/src'
 DATASET_DIR = './data/raw'
 
 HEADERS = {
     'user-agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36'
 }
+
+# logger
+LOG_FORMAT = '%(levelname)s\t%(asctime)s:\t%(message)s'
+logging.basicConfig(level = logging.DEBUG, format = LOG_FORMAT)
+log = logging.getLogger(__name__)
 
 class Fetcher:
 
@@ -121,9 +128,85 @@ class Fetcher:
 
         self.p.finish()
 
+def read_json(filename):
+
+    datasets = None
+
+    # read articles from json
+    with open(filename, 'r') as f:
+        datasets = json.load(f)['datasets']
+        log.info(f'--> {len(datasets)} datasets found in from "{filename}"')
+
+    return datasets
+
+def download_resource(url, path, fname, resource_hash):
+    """
+    Download resource
+    """
+    print('entrou!!')    
+
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    # File exists
+    if os.path.isfile(fname):
+
+        fhash = Fetcher().check_hash(fname)
+
+        # Corrupted, downloading again
+        if fhash != resource_hash:
+            log.warning(
+                f'Arquivo {fname} corrompido! Baixando.novamente ',
+                flush=True
+            )
+            Fetcher().get(url, fname)
+
+        # Not-corrupted, skiping
+        else:
+            log.info(f'Arquivo {fname} íntegro. Download ignorado.')
+
+    # File don't exist, downloading
+    else:
+        log.info(
+            f'Arquivo {fname} não localizado. Iniciando Download.',
+            flush=True
+        )
+        Fetcher().get(url, fname)
 
 ### Main
 if __name__ == '__main__':
+
+    # Read datasets.json
+    try:
+        datasets = read_json(DATASET_LIST)
+
+    except Exception as e:
+        log.error(f'Unable to read datasets. {e}')
+        exit(-1)
+
+    # Process datasets
+    try:
+
+        # Iterate over datasets
+        for ds in datasets:
+            log.info(f'--> {ds["id"]}: {ds["name"]}')
+
+            # Iterate over dataset resources
+            dsname = ds['id']
+            path = DATASRC_DIR + '/' + dsname.lower()
+            for resource in ds['resources']:
+                log.info(f'\t"{resource["filename"]}"')
+                fname = path + '/' + resource['filename']
+                download_resource(
+                    resource['url'], path, fname, resource['hash']
+                )
+
+    except Exception as e:
+        log.warning(f'Unable to process dataset "{ds["id"]}". {e}')
+        pass
+
+
+    exit(0)
 
     df = pd.read_csv(DATASET_LIST)
     df['download'] = df['download'].apply(
