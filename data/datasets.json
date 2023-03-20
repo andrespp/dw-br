@@ -1,0 +1,83 @@
+{
+    "areas": [
+        "health", "education", "public services"
+    ],
+
+    "themes": [
+        "Ciência, Inovação e Comunicação",
+        "Comércio, Serviços e Turismo",
+        "Cultura, Lazer e Esporte",
+        "Dados Estratégicos",
+        "Defesa e Segurança",
+        "Economia e Finanças",
+        "Educação",
+        "Equipamentos Públicos",
+        "Geografia",
+        "Governo e Política",
+        "Habitação, Saneamento e Urbanismo",
+        "Indústria",
+        "Justiça e Legislação",
+        "Saúde",
+        "Transportes e Trânsito"
+    ],
+
+    "repositories":[
+
+        {
+            "id":"tesourotransparente",
+            "name":"Tesouro Nacional Transparente",
+            "description":"Informações produzidas pelo Tesouro Nacional que são abertas, sem tratamento, de livre utilização e distribuição, desde que citada a fonte",
+            "link":"https://www.tesourotransparente.gov.br/ckan/dataset"
+        },
+
+        {
+            "id":"mte",
+            "name":"Portal de dados abertos do Ministério do Trabalho e Emprego",
+            "description":"",
+            "link":"ihttps://www.gov.br/trabalho-e-previdencia/pt-br/acesso-a-informacao/dados-abertos"
+        },
+
+        {
+            "id":"",
+            "name":"",
+            "description":"",
+            "link":""
+        }
+    ],
+
+    "datasets": [
+
+        {
+            "id":"municipiosbrasileiros",
+            "name":"Lista de Municipios do SIAFI",
+            "link":"https://www.tesourotransparente.gov.br/ckan/dataset/lista-de-municipios-do-siafi",
+            "publisher":"Tesouro Nacional",
+            "repository":"tesourotransparente",
+            "portal":"https://www.tesourotransparente.gov.br/ckan/dataset/lista-de-municipios-do-siafi",
+            "theme":"Geografia",
+            "description":"Lista de municípios do SIAFI com código SIAFI e código IBGE",
+            "resources": [
+                {
+                    "description":"Lista de municípios do SIAFI com código SIAFI e código IBGE",
+                    "obs":"Apesar da extensão .xlsx do arquivo, trata-se de arquivo text/csv",
+                    "type":"csv",
+                    "filename":"MUNICIPIOS_BRASIL.csv",
+                    "hash_type":"md5",
+                    "hash":"7952ef4040a42a8e4e83196c3ba2d039",
+                    "url":"https://www.tesourotransparente.gov.br/ckan/dataset/abb968cb-3710-4f85-89cf-875c91b9c7f6/resource/eebb3bc6-9eea-4496-8bcf-304f33155282/download/TABMUN-SIAFI.xlsx"
+                }
+            ]
+        },
+
+        {
+            "id":"",
+            "name":"",
+            "link":"",
+            "publisher":"",
+            "repository":"",
+            "portal":"",
+            "theme":"tdb",
+            "description":""
+        }
+    ]
+}
