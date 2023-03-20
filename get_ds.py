@@ -63,13 +63,17 @@ class Fetcher:
 
         except Exception as e:
 
-            print(f'Unable to download using urllib: {e}. Trying requests lib')
+            log.warning(
+                f'Unable to download using urllib: {e}. Trying requests lib'
+            )
 
             try:
                 fname = self.get_requests(url, fname)
 
             except Exception as e2:
-                print(f'Unable to download using requests: {e2}. Giving up!')
+                log.warning(
+                    f'Unable to download using requests: {e2}. Giving up!'
+                )
                 fname = None
 
         return fname
@@ -120,10 +124,10 @@ class Fetcher:
             ssl._create_default_https_context = ssl._create_unverified_context
             urlretrieve(url, to, update)
         except urllib.error.HTTPError as e:
-            print(f'ERR: {e.code} {e.reason}. {url}\n', flush=True)
+            log.error(f'ERR: {e.code} {e.reason}. {url}\n')
             return
         except urllib.error.URLError as e:
-            print(f'ERR: {e.reason}. {url}\n', flush=True)
+            log.error(f'ERR: {e.reason}. {url}\n')
             return
 
         self.p.finish()
@@ -140,10 +144,8 @@ def read_json(filename):
     return datasets
 
 def download_resource(url, path, fname, resource_hash):
+    """Download resource
     """
-    Download resource
-    """
-    print('entrou!!')    
 
     if not os.path.exists(path):
         os.makedirs(path)
@@ -155,22 +157,16 @@ def download_resource(url, path, fname, resource_hash):
 
         # Corrupted, downloading again
         if fhash != resource_hash:
-            log.warning(
-                f'Arquivo {fname} corrompido! Baixando.novamente ',
-                flush=True
-            )
+            log.warning(f'\tArquivo {fname} corrompido! Baixando.novamente.')
             Fetcher().get(url, fname)
 
         # Not-corrupted, skiping
         else:
-            log.info(f'Arquivo {fname} íntegro. Download ignorado.')
+            log.info(f'\tArquivo {fname} íntegro. Download ignorado.')
 
     # File don't exist, downloading
     else:
-        log.info(
-            f'Arquivo {fname} não localizado. Iniciando Download.',
-            flush=True
-        )
+        log.info( f'\tArquivo {fname} não localizado. Iniciando Download.')
         Fetcher().get(url, fname)
 
 ### Main
@@ -189,55 +185,27 @@ if __name__ == '__main__':
 
         # Iterate over datasets
         for ds in datasets:
-            log.info(f'--> {ds["id"]}: {ds["name"]}')
 
             # Iterate over dataset resources
             dsname = ds['id']
-            path = DATASRC_DIR + '/' + dsname.lower()
-            for resource in ds['resources']:
-                log.info(f'\t"{resource["filename"]}"')
-                fname = path + '/' + resource['filename']
-                download_resource(
-                    resource['url'], path, fname, resource['hash']
-                )
+
+            if dsname == '':
+                pass
+
+            else:
+                log.info(f'--> {ds["id"]}: {ds["name"]}')
+                path = DATASRC_DIR + '/' + dsname.lower()
+                for resource in ds['resources']:
+                    if resource['url'] == '':
+                        pass
+                    else:
+                        log.info(f'\t"{resource["filename"]}"')
+                        fname = path + '/' + resource['filename']
+                        download_resource(
+                            resource['url'], path, fname, resource['hash']
+                        )
 
     except Exception as e:
         log.warning(f'Unable to process dataset "{ds["id"]}". {e}')
         pass
-
-
-    exit(0)
-
-    df = pd.read_csv(DATASET_LIST)
-    df['download'] = df['download'].apply(
-        lambda x: True if x.upper()=='S' else False
-    )
-
-    for index, ds in df[df['download']].iterrows():
-
-        path = DATASRC_DIR + '/' + ds['nome'].lower()
-        fname = path + '/' + ds['arquivo']
-        if not os.path.exists(path):
-            os.makedirs(path)
-
-        # File exists
-        if os.path.isfile(fname):
-
-            fhash = Fetcher().check_hash(fname)
-
-            # Corrupted, downloading again
-            if fhash != ds['hash_md5']:
-                print(f'WARN: Arquivo {ds["id"]}-{fname} corrompido! Baixando.'
-                      'novamente ', flush=True)
-                Fetcher().get(ds['url'], fname)
-
-            # Not-corrupted, skiping
-            else:
-                print(f'Arquivo {ds["id"]}-{fname} íntegro. Download ignorado.')
-
-        # File don't exist, downloading
-        else:
-            print(f'Arquivo {ds["id"]}-{fname} não localizado. '
-                   'Iniciando Download.', flush=True)
-            Fetcher().get(ds['url'], fname)
 
