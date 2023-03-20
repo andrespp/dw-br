@@ -53,6 +53,7 @@
             "link":"https://www.tesourotransparente.gov.br/ckan/dataset/lista-de-municipios-do-siafi",
             "publisher":"Tesouro Nacional",
             "repository":"tesourotransparente",
+			"metadata":"",
             "portal":"https://www.tesourotransparente.gov.br/ckan/dataset/lista-de-municipios-do-siafi",
             "theme":"Geografia",
             "description":"Lista de municípios do SIAFI com código SIAFI e código IBGE",
@@ -70,14 +71,265 @@
         },
 
         {
+            "id":"novo-caged",
+            "name":"Novo CAGED - Cadastro Geral de Empregados e Desempregados",
+            "link":"http://pdet.mte.gov.br/microdados-rais-e-caged",
+            "publisher":"Ministério do Trabalho",
+            "repository":"ftp://ftp.mtps.gov.br/pdet/microdados/",
+			"metadata":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/",
+            "portal":"http://pdet.mte.gov.br/caged",
+            "theme":"Economia e Finanças",
+            "description":"O  CAGED constitui importante fonte de informação do mercado de trabalho de âmbito nacional e de periodicidade mensal. Foi criado como instrumento de acompanhamento e de fiscalização do processo de admissão e de dispensa de trabalhadores regidos pela CLT, com o objetivo de assistir os desempregados e de apoiar medidas contra o desemprego. A partir de 1986, passou a ser utilizado como suporte ao pagamento do seguro-desemprego e, mais recentemente, tornou-se, também, um relevante instrumento à reciclagem profissional e à recolocação do trabalhador no mercado de trabalho.",
+            "resources": [
+                {
+                    "description":"CAGED MOV 202001",
+                    "obs":"",
+                    "type":"7z",
+                    "filename":"CAGEDMOV202001.7z",
+                    "hash_type":"md5",
+                    "hash":"7679428b2d6f8f46e7f2e9ecce0f755d",
+                    "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2020/202001/CAGEDMOV202001.7z"
+                },
+                {
+                    "description":"CAGED MOV 202002",
+                    "obs":"",
+                    "type":"7z",
+                    "filename":"CAGEDMOV202002.7z",
+                    "hash_type":"md5",
+                    "hash":"1cd41a536bad8a54916c56ce1e1f230f",
+                    "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2020/202002/CAGEDMOV202002.7z"
+                },
+                {
+                    "description":"CAGED MOV 202003",
+                    "obs":"",
+                    "type":"7z",
+                    "filename":"CAGEDMOV202003.7z",
+                    "hash_type":"md5",
+                    "hash":"bba5106b3f34cd976755eff2b45e2ffa",
+                    "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2020/202003/CAGEDMOV202003.7z"
+                },
+                {
+                    "description":"CAGED MOV 202004",
+                    "obs":"",
+                    "type":"7z",
+                    "filename":"CAGEDMOV202004.7z",
+                    "hash_type":"md5",
+                    "hash":"d7c732326e4a9dccf5280049b834286f",
+                    "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2020/202004/CAGEDMOV202004.7z"
+                },
+                {
+                    "description":"CAGED MOV 202005",
+                    "obs":"",
+                    "type":"7z",
+                    "filename":"CAGEDMOV202005.7z",
+                    "hash_type":"md5",
+                    "hash":"b281462e238e91cdc96d5aae815f9368",
+                    "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2020/202005/CAGEDMOV202005.7z"
+                },
+                {
+                    "description":"CAGED MOV 202006",
+                    "obs":"",
+                    "type":"7z",
+                    "filename":"CAGEDMOV202006.7z",
+                    "hash_type":"md5",
+                    "hash":"041d728f424510bc2dd9a7fa1cae4037",
+                    "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2020/202006/CAGEDMOV202006.7z"
+                },
+                {
+                    "description":"CAGED MOV 202007",
+                    "obs":"",
+                    "type":"7z",
+                    "filename":"CAGEDMOV202007.7z",
+                    "hash_type":"md5",
+                    "hash":"5a65828872a576b0a9b2e5d1fe5e04e7",
+                    "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2020/202007/CAGEDMOV202007.7z"
+                },
+                {
+                    "description":"CAGED MOV 202008",
+                    "obs":"",
+                    "type":"7z",
+                    "filename":"CAGEDMOV202008.7z",
+                    "hash_type":"md5",
+                    "hash":"698bf0020bffc3569d47c383ac7dea4e",
+                    "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2020/202008/CAGEDMOV202008.7z"
+                },
+                {
+                    "description":"CAGED MOV 202009",
+                    "obs":"",
+                    "type":"7z",
+                    "filename":"CAGEDMOV202009.7z",
+                    "hash_type":"md5",
+                    "hash":"5c27062a50d3b1dfe9af5ec2344e6efc",
+                    "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2020/202009/CAGEDMOV202009.7z"
+                },
+                {
+                    "description":"CAGED MOV 202010",
+                    "obs":"",
+                    "type":"7z",
+                    "filename":"CAGEDMOV202010.7z",
+                    "hash_type":"md5",
+                    "hash":"6122504d67e1796d015f3845425e3d21",
+                    "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2020/202010/CAGEDMOV202010.7z"
+                },
+                {
+                    "description":"CAGED MOV 202011",
+                    "obs":"",
+                    "type":"7z",
+                    "filename":"CAGEDMOV202011.7z",
+                    "hash_type":"md5",
+                    "hash":"3e3992a9dfc7dc2ab6bae02e82b35df7",
+                    "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2020/202011/CAGEDMOV202011.7z"
+                },
+                {
+                    "description":"CAGED MOV 202012",
+                    "obs":"",
+                    "type":"7z",
+                    "filename":"CAGEDMOV202012.7z",
+                    "hash_type":"md5",
+                    "hash":"48ed8b1e7c8acd93cfac86b3440dd2b5",
+                    "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2020/202012/CAGEDMOV202012.7z"
+                },
+                {
+                    "description":"CAGED MOV 202101",
+                    "obs":"",
+                    "type":"7z",
+                    "filename":"CAGEDMOV202101.7z",
+                    "hash_type":"md5",
+                    "hash":"d3e21d557323750f5fc91121ad6fe1da",
+                    "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2021/202101/CAGEDMOV202101.7z"
+                },
+                {
+                    "description":"CAGED MOV 202102",
+                    "obs":"",
+                    "type":"7z",
+                    "filename":"CAGEDMOV202102.7z",
+                    "hash_type":"md5",
+                    "hash":"5187ec13c37c9478c39018d6b756f522",
+                    "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2021/202102/CAGEDMOV202102.7z"
+                },
+                {
+                    "description":"CAGED MOV 202103",
+                    "obs":"",
+                    "type":"7z",
+                    "filename":"CAGEDMOV202103.7z",
+                    "hash_type":"md5",
+                    "hash":"48e07749fce1f5aafbd1b8c9fc0a6c6e",
+                    "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2021/202103/CAGEDMOV202103.7z"
+                },
+                {
+                    "description":"CAGED MOV 202104",
+                    "obs":"",
+                    "type":"7z",
+                    "filename":"CAGEDMOV202104.7z",
+                    "hash_type":"md5",
+                    "hash":"a38fea6a58d18e0e43b33803a3451e4a",
+                    "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2021/202104/CAGEDMOV202104.7z"
+                },
+                {
+                    "description":"CAGED MOV 202105",
+                    "obs":"",
+                    "type":"7z",
+                    "filename":"CAGEDMOV202105.7z",
+                    "hash_type":"md5",
+                    "hash":"78f44ae64d9a6166c559019e3a9bff01",
+                    "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2021/202105/CAGEDMOV202105.7z"
+                },
+                {
+                    "description":"CAGED MOV 202106",
+                    "obs":"",
+                    "type":"7z",
+                    "filename":"CAGEDMOV202106.7z",
+                    "hash_type":"md5",
+                    "hash":"e679f67861ea17c1485b156de7c496f5",
+                    "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2021/202106/CAGEDMOV202106.7z"
+                },
+                {
+                    "description":"CAGED MOV 202107",
+                    "obs":"",
+                    "type":"7z",
+                    "filename":"CAGEDMOV202107.7z",
+                    "hash_type":"md5",
+                    "hash":"681a573ef8e2ebd3380f8545211e4f2a",
+                    "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2021/202107/CAGEDMOV202107.7z"
+                },
+                {
+                    "description":"CAGED MOV 202108",
+                    "obs":"",
+                    "type":"7z",
+                    "filename":"CAGEDMOV202108.7z",
+                    "hash_type":"md5",
+                    "hash":"71311f4fa293504d95db7eb707670dfa",
+                    "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2021/202108/CAGEDMOV202108.7z"
+                },
+                {
+                    "description":"CAGED MOV 202109",
+                    "obs":"",
+                    "type":"7z",
+                    "filename":"CAGEDMOV202109.7z",
+                    "hash_type":"md5",
+                    "hash":"e55bb1e169953aef3987e0aca0d23614",
+                    "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2021/202109/CAGEDMOV202109.7z"
+                },
+                {
+                    "description":"CAGED MOV 202110",
+                    "obs":"",
+                    "type":"7z",
+                    "filename":"CAGEDMOV202110.7z",
+                    "hash_type":"md5",
+                    "hash":"6180fac1ddf5061b0897c4e3f72cf2f8",
+                    "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2021/202110/CAGEDMOV202110.7z"
+                },
+                {
+                    "description":"CAGED MOV 202111",
+                    "obs":"",
+                    "type":"7z",
+                    "filename":"CAGEDMOV202111.7z",
+                    "hash_type":"md5",
+                    "hash":"8722a5d08a1526b93fc6ec32f7fc8cad",
+                    "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2021/202111/CAGEDMOV202111.7z"
+                },
+                {
+                    "description":"CAGED MOV 202112",
+                    "obs":"",
+                    "type":"7z",
+                    "filename":"CAGEDMOV202112.7z",
+                    "hash_type":"md5",
+                    "hash":"1d58c382c9bc25003df53706f5683c60",
+                    "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2021/202112/CAGEDMOV202112.7z"
+                },
+                {
+                    "description":"",
+                    "obs":"",
+                    "type":"7z",
+                    "filename":"",
+                    "hash_type":"md5",
+                    "hash":"",
+                    "url":""
+                }
+            ]
+        },
+
+        {
             "id":"",
             "name":"",
             "link":"",
             "publisher":"",
             "repository":"",
+			"metadata":"",
             "portal":"",
             "theme":"tdb",
-            "description":""
+            "description":"",
+            "resources": [
+                {
+                    "description":"",
+                    "obs":"",
+                    "type":"",
+                    "filename":"",
+                    "hash_type":"",
+                    "hash":"",
+                    "url":""
+                }
+            ]
         }
     ]
 }
