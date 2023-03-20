@@ -127,7 +127,7 @@ class Fetcher:
             log.error(f'ERR: {e.code} {e.reason}. {url}\n')
             return
         except urllib.error.URLError as e:
-            log.error(f'ERR: {e.reason}. {url}\n')
+            log.error(f'\t{e.reason}. {url}\n')
             return
 
         self.p.finish()
