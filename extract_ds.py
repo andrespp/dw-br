@@ -4,8 +4,9 @@ import py7zr
 import shutil
 import zipfile
 from prefect import task, flow, get_run_logger
-from prefect_dask.task_runners import DaskTaskRunner
-# from prefect.task_runners import SequentialTaskRunner
+#from prefect_dask.task_runners import DaskTaskRunner
+#from prefect.task_runners import ConcurrentTaskRunner
+from prefect.task_runners import SequentialTaskRunner
 
 # 1st level subdirs are datasets. Nth level belengs to 1st level ds
 
@@ -56,8 +57,9 @@ def extract_ds_file(ds_dir, ds_name, file):
 
 @flow(
     name='Extract Datasets',
-    task_runner=DaskTaskRunner(),
-    # task_runner=SequentialTaskRunner(),
+    #task_runner=DaskTaskRunner(),
+    #task_runner=ConcurrentTaskRunner(),
+    task_runner=SequentialTaskRunner(),
 )
 def ds_extract_flow(datasrc_dir, dataset_dir):
 
