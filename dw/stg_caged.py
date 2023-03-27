@@ -1,5 +1,3 @@
-"""stg_caged.py
-"""
 import pandas as pd
 import numpy as np
 import dask.dataframe as dd
@@ -10,7 +8,7 @@ TABLE_NAME = 'stg_caged'
 ###############################################################################
 # Extract functions
 ###############################################################################
-def extract(ds_files, target, verbose=False):
+def extract(ds_files, verbose=False):
     """Extract data from source
 
     Parameters
@@ -28,14 +26,10 @@ def extract(ds_files, target, verbose=False):
     if(verbose):
         print(f'{TABLE_NAME}: Extract. ', end='', flush=True)
 
-    if target=='parquet':
-        return extract_dask(ds_files, verbose)
-    elif target=='postgres':
-        return extract_postgres(ds_files, verbose)
-    else:
-        if (verbose):
-            print('WARN: Target not implemented, skipping.')
-        return pd.DataFrame()
+    # deprecated, using only dask
+    #return extract_postgres(ds_files, verbose)
+
+    return extract_dask(ds_files, verbose)
 
 def extract_postgres(ds_files, verbose=False):
     """Extract data from source
@@ -114,40 +108,32 @@ def extract_dask(ds_files, verbose=False):
         ddf_len = ddf.map_partitions(len).compute().sum()
         print(f'{ddf_len} registries extracted.')
 
-    return ddf
+    return ddf, ddf_len
 
 ###############################################################################
 # Transform functions
 ###############################################################################
-def transform(df, target, dw=None, verbose=False):
+def transform(df, dw=None, dw_sample=None, verbose=False):
     """Transform data
 
     Parameters
     ----------
-        df | Pandas DataFrame
+        df | Dask DataFrame
 
-        target | string
-            DW's load target. Options are 'parquet', 'postgres', 'sample'
+        dw | DataWarehouse object or Path string (parquet target)
 
-        dw | DataWarehouse Object
-            Object to be used in data lookups
+        dw_sample | DataWarehouse Object
 
     Returns
     -------
-        data | Pandas or DataFrame
-            Data to be tranformed
+        data | Pandas or Dask DataFrame
     """
     if(verbose):
         print(f'{TABLE_NAME}: Transform. ', end='', flush=True)
 
-    if target=='parquet':
-        return transform_dask(df, dw, verbose)
-    elif target=='postgres':
-        return transform_postgres(df, dw, verbose)
-    else:
-        if (verbose):
-            print('WARN: Target not implemented, skipping.')
-        return pd.DataFrame()
+    #return transform_postgres(df, dw, verbose)
+
+    return transform_dask(df, dw, verbose)
 
 def transform_postgres(df, dw=None, verbose=False):
     """Transform data
@@ -202,43 +188,36 @@ def transform_dask(df, dw=None, verbose=False):
         df_len = df.map_partitions(len).compute().sum()
         print(f'{df_len} registries transformed.')
 
-    return df
+    return df, df_len
 
 ###############################################################################
 # Load functions
 ###############################################################################
-def load(dw, df, target, truncate=False, verbose=False, chunksize=None):
+def load(df, dw=None, dw_sample=None, truncate=False, verbose=False):
     """Load data into the Data Warehouse
 
     Parameters
     ----------
-        dw | DataWarehouse object or String
-            DataWarehouse object or path to parquet files
-
-        df | Pandas or Dask DataFrame
+        df | Dask DataFrame
             Data to be loaded
 
-        target | string
-            DW's load target. Options are 'parquet', 'postgres', 'sample'
+        dw | DataWarehouse object or Path string (parquet target)
+
+        dw_sample | DataWarehouse object
 
         truncate | boolean
             If true, truncate table before loading data
-
-        chunksize | int
     """
     if(verbose):
         print(f'{TABLE_NAME}: Load. ', end='', flush=True)
 
-    if target=='parquet':
+    if isinstance(dw, str): # target=='parquet':
         return load_dask(dw, df, verbose=verbose)
-    elif target=='postgres':
+
+    else: # target=='postgres':
         return load_postgres(
             dw, df, truncate=truncate, verbose=verbose, chunksize=chunksize
         )
-    else:
-        if (verbose):
-            print('WARN: Target not implemented, skipping.')
-        return
 
 def load_postgres(dw, df, truncate=False, verbose=False, chunksize=None):
     """Load data into the Data Warehouse
@@ -265,10 +244,11 @@ def load_postgres(dw, df, truncate=False, verbose=False, chunksize=None):
 
     dw.write_table(TABLE_NAME, df, chunksize=chunksize)
 
+    df_len = len(df)
     if(verbose):
-        print(f'{len(df)} registries loaded.\n')
+        print(f'{df_len} registries loaded.\n')
 
-    return
+    return df, df_len
 
 def load_dask(dw, df, verbose=False):
     """Load data into the Data Warehouse
@@ -306,7 +286,7 @@ def load_dask(dw, df, verbose=False):
         df_len = df.map_partitions(len).compute().sum()
         print(f'{df_len} registries loaded.')
 
-    return
+    return df, df_len
 
 def load_sample(dw, df, frac=0.01, truncate=False, verbose=False, chunksize=None):
     """Load data into the Data Warehouse

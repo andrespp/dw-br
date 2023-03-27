@@ -57,6 +57,9 @@
             "portal":"https://www.tesourotransparente.gov.br/ckan/dataset/lista-de-municipios-do-siafi",
             "theme":"Geografia",
             "description":"Lista de municípios do SIAFI com código SIAFI e código IBGE",
+            "dwbr": [
+                "stg":"stg_municipiosbrasileiros"
+            ],
             "resources": [
                 {
                     "description":"Lista de municípios do SIAFI com código SIAFI e código IBGE",
@@ -80,6 +83,9 @@
             "portal":"http://pdet.mte.gov.br/caged",
             "theme":"Economia e Finanças",
             "description":"O  CAGED constitui importante fonte de informação do mercado de trabalho de âmbito nacional e de periodicidade mensal. Foi criado como instrumento de acompanhamento e de fiscalização do processo de admissão e de dispensa de trabalhadores regidos pela CLT, com o objetivo de assistir os desempregados e de apoiar medidas contra o desemprego. A partir de 1986, passou a ser utilizado como suporte ao pagamento do seguro-desemprego e, mais recentemente, tornou-se, também, um relevante instrumento à reciclagem profissional e à recolocação do trabalhador no mercado de trabalho.",
+            "dwbr": [
+                "stg":"stg_caged"
+            ],
             "resources": [
                 {
                     "description":"CAGED MOV 202001",
