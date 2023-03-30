@@ -1,5 +1,5 @@
-DW-BRA
-======
+DW-BR
+=====
 
 ## Introdução
 
@@ -9,7 +9,7 @@ Um Data Warehouse (DW) de conjuntos de dados abertos Brasileiros.
 
 ### Provisionamento da Infraestrutura
 
-O DW-BRA poussui scripts para configuração da infra estrutura, utilizando a ferramenta [Ansible](https://www.ansible.com/).
+O DW-BR poussui scripts para configuração da infra estrutura, utilizando a ferramenta [Ansible](https://www.ansible.com/).
 
 Para confirugação do servidor utilizando estes scritps, inicialmente deve-se definir uma máquina (física, VM, Container) com o sistema operacional [Debian](https://www.debian.org/) e um usuário com poderes de `sudo` definidos.
 
@@ -22,7 +22,7 @@ $ cd ansible
 $ playbook -i inventory main.yml
 ```
 
-Após a execução, o servidor estará configurado para execução das ferramentas do `DW-BRA`
+Após a execução, o servidor estará configurado para execução das ferramentas do `DW-BR`
 
 ### Parâmetros de conexões
 
@@ -37,7 +37,7 @@ $ docker-compose up -d
 ### Construir/Atualizar o DW
 
 ```bash
-conda activate dwbra && ./get_ds.py && ./extract_ds.py && ./update-dw
+conda activate dwbr && ./get_ds.py && ./extract_ds.py && ./update-dw
 ```
 
 ## Referências

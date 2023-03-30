@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PROJECT_NAME="DWBRA's ETL Container"
+PROJECT_NAME="DWBR's ETL Container"
 
 # Sets script to fail if any command fails.
 set -e

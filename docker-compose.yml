@@ -1,13 +1,13 @@
 version: '3.1'
 
 services:
-  dw-bra:
-    image: postgres:11
-    container_name: dw-bra
+  dw-br:
+    image: postgres:15
+    container_name: dw-br
     restart: unless-stopped
     environment:
-     - POSTGRES_DB=dwbra
-     - POSTGRES_USER=dwbra-user
+     - POSTGRES_DB=dwbr
+     - POSTGRES_USER=dwbr-user
      - POSTGRES_PASSWORD=Hc9iQoOs4xX7mxWeYYzzhA
     ports:
      - "5432:5432"
