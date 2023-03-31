@@ -1,31 +1,26 @@
 name: dwbr
 
 channels:
-  - conda-forge
-  # - rapidsai
   - defaults
 
 dependencies:
   - python=3.10
-  - dask
-  - dask-sql
-  # - dask-cudf
-  - fastparquet
-  - graphviz
-  - numpy
-  - openpyxl
-  - pandas
   - pip
-  - prefect
-  - progress
-  - psycopg2
-  - pydot
-  - python-graphviz
-  - requests
-  - sqlalchemy
-  - sqlalchemy_schemadisplay
-  - unidecode
   - pip:
+    - dask
+    - dask-sql
+    - fastparquet
+    - graphviz
+    - numpy
+    - openpyxl
+    - pandas
+    - prefect
     - prefect-dask
+    - progress
+    - psycopg2
     - py7zr
+    - requests
+    - sqlalchemy
+    - sqlalchemy_schemadisplay
+    - unidecode
     - uetl==0.0.9

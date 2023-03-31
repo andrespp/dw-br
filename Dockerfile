@@ -17,7 +17,9 @@ RUN apt-get -y install build-essential unixodbc-dev python3-psycopg2 libpq-dev
 # Setup Conda Environment
 ARG CONDA_ENV_NAME=dwbr
 COPY ./environment.yml ./
-RUN conda env create -f environment.yml
+# RUN conda install conda=23.3.1 && conda env create -f environment.yml
+RUN conda update -n base -c defaults conda && \
+    conda env create -f environment.yml
 RUN echo "source activate $CONDA_ENV_NAME" > ~/.bashrc
 ENV PATH /opt/conda/envs/$CONDA_ENV_NAME/bin:$PATH
 ENV HOME /tmp
