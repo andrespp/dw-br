@@ -17,10 +17,9 @@ dependencies:
     - prefect
     - prefect-dask
     - progress
-    - psycopg2
     - py7zr
     - requests
     - sqlalchemy
     - sqlalchemy_schemadisplay
     - unidecode
-    - uetl==0.0.9
+    - uetl==0.1.5
