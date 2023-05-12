@@ -75,6 +75,7 @@
                     "obs":"Apesar da extensão .xlsx do arquivo, trata-se de arquivo text/csv",
                     "type":"csv",
                     "filename":"MUNICIPIOS_BRASIL.csv",
+                    "target_file": "MUNICIPIOS_BRASIL.csv",
                     "hash_type":"md5",
                     "hash":"7952ef4040a42a8e4e83196c3ba2d039",
                     "url":"https://www.tesourotransparente.gov.br/ckan/dataset/abb968cb-3710-4f85-89cf-875c91b9c7f6/resource/eebb3bc6-9eea-4496-8bcf-304f33155282/download/TABMUN-SIAFI.xlsx"
@@ -347,6 +348,8 @@
                     "obs":"",
                     "type":"zip",
                     "filename":"microdados_censo_escolar_2022.zip",
+                    "data_file":"./Microdados do Censo Escolar da Educaç╞o Básica 2022/dados/microdados_ed_basica_2022.csv",
+                    "target_file": "microdados_ed_basica_2022.csv",
                     "hash_type":"md5",
                     "hash":"5329bd90a90b79276e1fa9ecfcfe01bb",
                     "url":"https://download.inep.gov.br/dados_abertos/microdados_censo_escolar_2022.zip"
@@ -383,6 +386,8 @@
                     "filename":"",
                     "hash_type":"",
                     "hash":"",
+                    "data_file":"",
+                    "target_file": "",
                     "url":""
                 }
             ]

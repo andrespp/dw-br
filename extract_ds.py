@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import json
 import py7zr
 import shutil
 import zipfile
@@ -10,11 +11,54 @@ from prefect.task_runners import SequentialTaskRunner
 
 # 1st level subdirs are datasets. Nth level belengs to 1st level ds
 
+DATASET_LIST = './data/datasets.json'
 DATASRC_DIR = './data/src'
 DATASET_DIR = './data/raw'
 
 # Set Loglevel
 os.environ['PREFECT_LOGGING_LEVEL'] = 'DEBUG' # workaround to task WARNIING level
+@task(
+    name='Extract file2'
+)
+def extract_resource_file(
+        dsname, fname, src_path, destination_path, resource_type
+    ):
+
+    log = get_run_logger()
+
+    full_resource_fname = os.path.join(src_path, fname)
+
+    # Check if destination dir exists
+    if not os.path.exists(destination_path):
+        os.makedirs(destination_path)
+        log.info(f'{dsname}: directory "{destination_path}" created')
+
+    if resource_type.lower() == 'csv':
+        try:
+            shutil.copy(full_resource_fname, destination_path)
+            log.info(f'{dsname}: "{fname}" copyed to "{destination_path}"')
+        except Exception as e:
+            log.error(
+                f'{dsname}: Unable to copy "{fname}" to "{destination_path}. {e}"'
+            )
+    elif resource_type.lower() == 'zip':
+        pass
+    elif resource_type.lower() == '7z':
+        if not py7zr.is_7zfile(full_resource_fname):
+            raise TypeError('Not a 7z file')
+        else:
+            try:
+                with py7zr.SevenZipFile(full_resource_fname, mode='r') as z:
+                    z.extractall(path=destination_path)
+                    log.info(
+                        f'{dsname}: "{fname}" extracted to "{destination_path}"'
+                    )
+            except py7zr.exceptions.Bad7zFile as e:
+                log.warning(f'{dsname}: {full_resource_fname} 7z file is corrupted')
+    else:
+        raise TypeError('Invalid resource file type')
+
+    return
 
 @task(
     name='Extract file'
@@ -66,33 +110,44 @@ def ds_extract_flow(datasrc_dir, dataset_dir):
     log = get_run_logger()
 
     # Retrieve datasets
-    ds_list = []
-    with os.scandir(datasrc_dir) as it:
-        for entry in it:
-            if not entry.name.startswith('.') and entry.is_dir():
-                ds_list.append(entry.name)
+    with open(DATASET_LIST, 'r') as f:
+        datasets = json.load(f)['datasets']
+        log.info(
+            f'--> {len(datasets)} datasets found in from "{DATASET_LIST}"'
+        )
 
-    # Lookup dataset files
-    datasets = {}
+    # Iterate over datasets
+    for ds in datasets:
 
-    for ds_name in ds_list:
+            # Iterate over dataset resources
+            dsname = ds['id']
 
-        datasets[ds_name] = {}
-        file_list = []
+            if dsname == '':
+                pass
 
-        for root, dirs, files in os.walk(os.path.join(datasrc_dir, ds_name)):
+            else:
+                log.info(f'--> {ds["id"]}: {ds["name"]}')
+                src_path = DATASRC_DIR + '/' + dsname.lower()
+                destination_path = DATASET_DIR + '/' + dsname.lower()
+                for resource in ds['resources']:
+                    log.info(f'\t"{resource["filename"]}"')
+                    if resource['url'] == '':
+                        pass
+                    elif os.path.isfile(
+                        os.path.join(destination_path, resource['target_file'])
+                    ):
+                        log.warning('Destination file exists, skiping')
+                    else:
+                        log.info(f'\t"{resource["filename"]}"')
+                        # Extract datasets
+                        extract_resource_file.submit(
+                            dsname,
+                            resource['filename'],
+                            src_path,
+                            destination_path,
+                            resource['type'],
+                        )
 
-            for file in files:
-                file_list.append(os.path.join(root, file))
-
-        datasets[ds_name]['files'] = file_list
-
-    log.info(f'Found datasets: {list(datasets.keys())}')
-
-# Extract datasets
-    for ds_name in datasets:
-        for file in datasets[ds_name]['files']:
-            extract_ds_file.submit(dataset_dir, ds_name, file)
 
 if __name__ == "__main__":
 
