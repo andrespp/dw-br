@@ -48,7 +48,7 @@ class Fetcher:
 
         return fhash.hexdigest()
 
-    def get(self, url, fname=False):
+    def get(self, url, fname=False, verify=False):
         '''Download file from url (using requests, then urllib in case of error)
 
         Parameters
@@ -57,6 +57,9 @@ class Fetcher:
 
             fname | str (optional)
                 Destination filename. If not defined, original name will be used
+
+            verify | Boolean
+                Check SSL Certificate
         '''
         try:
             fname = self.get_urllib(url, fname)
@@ -68,7 +71,7 @@ class Fetcher:
             )
 
             try:
-                fname = self.get_requests(url, fname)
+                fname = self.get_requests(url, fname, verify=verify)
 
             except Exception as e2:
                 log.warning(
@@ -78,10 +81,12 @@ class Fetcher:
 
         return fname
 
-    def get_requests(self, url, fname=False):
+    def get_requests(self, url, fname=False, verify=False):
         '''Download file from url using requests library
         '''
-        r = requests.get(url, stream=True, verify=False, headers=HEADERS)
+        r = requests.get(
+            url, stream=True, verify=verify, headers=HEADERS
+        )
         size = r.headers['content-length']
         if not fname:
             fname = url.split('/')[-1]
@@ -127,6 +132,13 @@ class Fetcher:
             log.error(f'ERR: {e.code} {e.reason}. {url}\n')
             return
         except urllib.error.URLError as e:
+            try: # Try without certificate check
+                ctx = ssl.create_default_context()
+                ctx.check_hostname = False
+                ctx.verify_mode = ssl.CERT_NONE
+                urlretrieve(url, to, update)
+            except Exception as e:
+                log.error(f'\t{e.reason}. {url}\n')
             log.error(f'\t{e.reason}. {url}\n')
             return
 
