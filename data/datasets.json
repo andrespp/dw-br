@@ -38,6 +38,13 @@
         },
 
         {
+            "id":"inep",
+            "name":"Instituto Nacional de Estudos e Pesquisas Educacionais Anísio Teixeira",
+            "description":"Os microdados do Inep reúnem um conjunto de informações detalhadas relacionadas às pesquisas, aos exames e avaliações do Instituto.",
+            "link":"https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/microdados"
+        },
+
+        {
             "id":"",
             "name":"",
             "description":"",
@@ -317,6 +324,45 @@
                     "url":""
                 }
             ]
+        },
+
+        {
+            "id":"censoescolar",
+            "name":"Censo Escolar",
+            "link":"https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/microdados/censo-escolar",
+            "publisher":"Instituto Nacional de Estudos e Pesquisas Educacionais Anísio Teixeira",
+            "repository":"Inep",
+			"metadata":"",
+            "portal":"https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos",
+            "theme":"Educação",
+            "description":"Microdados do censo escolar brasileiro",
+            "dwbr": [
+                {
+                    "stg":"stg_censoescolar"
+                }
+                    ],
+            "resources": [
+                {
+                    "description":"Microdados do Censo Escolar da Educação Básica 2022",
+                    "obs":"",
+                    "type":"zip",
+                    "filename":"microdados_censo_escolar_2022.zip",
+                    "hash_type":"md5",
+                    "hash":"5329bd90a90b79276e1fa9ecfcfe01bb",
+                    "url":"https://download.inep.gov.br/dados_abertos/microdados_censo_escolar_2022.zip"
+                },
+
+                {
+                    "description":"Microdados do Censo Escolar da Educação Básica 1995",
+                    "obs":"",
+                    "type":"zip",
+                    "filename":"microdados_censo_escolar_1995.zip",
+                    "hash_type":"md5",
+                    "hash":"820aed406a6b352f37d406115ef08ccc",
+                    "url":"https://download.inep.gov.br/dados_abertos/microdados_censo_escolar_1995.zip"
+                }
+            ]
+            
         },
 
         {
