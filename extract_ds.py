@@ -28,7 +28,7 @@ def extract_resource_file(
     log = get_run_logger()
 
     full_resource_fname = os.path.join(src_path, fname)
-    target = os.path.join(destination_path, target_file)
+    full_target_fname = os.path.join(destination_path, target_file)
 
     # Check if destination dir exists
     if not os.path.exists(destination_path):
@@ -38,16 +38,43 @@ def extract_resource_file(
     # CSV Files
     if resource_type.lower() == 'csv':
         try:
-            shutil.copy(full_resource_fname, target)
-            log.info(f'{dsname}: "{fname}" copyed to "{target}"')
+            shutil.copy(full_resource_fname, full_target_fname)
+            log.info(f'{dsname}: "{fname}" copyed to "{full_target_fname}"')
         except Exception as e:
             log.error(
-                f'{dsname}: Unable to copy "{fname}" to "{target}. {e}"'
+                f'{dsname}: Unable to copy "{fname}" to "{full_target_fname}. {e}"'
             )
 
     # ZIP Files
     elif resource_type.lower() == 'zip':
-        pass
+        if not zipfile.is_zipfile(full_resource_fname):
+            raise TypeError('Not a zip file')
+        else:
+            try:
+                with zipfile.ZipFile(full_resource_fname, mode='r') as z:
+                    log.info(
+                        f'{dsname}: Extrating "{data_file}" to ' \
+                        f'"{full_target_fname}"'
+                    )
+                    extract_path = f'{destination_path}/tmp'
+                    z.extract(data_file, extract_path) # extract
+                    if target_file: # move
+                        os.rename(
+                            os.path.join(extract_path, data_file),
+                            full_target_fname,
+                        )
+                    print(f'removing extract_path {extract_path}')
+                    # delete extract_path
+                    shutil.rmtree(
+                        extract_path, ignore_errors=False, onerror=None
+                    )
+                    log.info(
+                        f'{dsname}: "{fname}" extracted to "{full_target_fname}"'
+                    )
+            except zipfile.BadZipFile as e:
+                log.warning(
+                    f'{dsname}: {full_resource_fname} ZIP file is corrupted'
+                )
 
     # 7-ZIP Files
     elif resource_type.lower() == '7z':
@@ -63,7 +90,7 @@ def extract_resource_file(
                             os.path.join(destination_path, target_file),
                         )
                     log.info(
-                        f'{dsname}: "{fname}" extracted to "{target}"'
+                        f'{dsname}: "{fname}" extracted to "{full_target_fname}"'
                     )
             except py7zr.exceptions.Bad7zFile as e:
                 log.warning(
