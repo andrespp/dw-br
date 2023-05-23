@@ -7,6 +7,7 @@ import pandas as pd
 import requests
 import ssl
 import urllib
+import urllib.error
 from urllib.request import urlretrieve
 from progress.bar import Bar
 from progress.spinner import Spinner
@@ -138,8 +139,7 @@ class Fetcher:
                 ctx.verify_mode = ssl.CERT_NONE
                 urlretrieve(url, to, update)
             except Exception as e:
-                log.error(f'\t{e.reason}. {url}\n')
-            log.error(f'\t{e.reason}. {url}\n')
+                log.error(f'\t{e}. {url}\n')
             return
 
         self.p.finish()
