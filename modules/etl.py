@@ -1,4 +1,4 @@
-from modules import municipiosbrasileiros, caged
+from modules import municipiosbrasileiros, caged, dwbr
 from prefect import flow, task
 from prefect.task_runners import SequentialTaskRunner
 import os
@@ -13,6 +13,10 @@ datasets = {
     'caged':{
         'stg':['stg_caged'],
     },
+
+    'dwbr':{
+        'dim':['dim_data'],
+    }
 
 }
 
@@ -101,6 +105,15 @@ def trigger_etl(
 
         caged_ds_stats = caged.dataset_flow(
             DW, DW_SAMPLE, CONFIG['CAGED']['CONJUNTOS'].split(',\n'),
+            ds_group, ds_table, verbose
+        )
+
+    # "dwbr" tables flow
+    dwbr_ds_stats = None
+    if set(ds_name).intersection(set(['all', 'dwbr'])):
+
+        dwbr_ds_stats = dwbr.dataset_flow(
+            DW, DW_SAMPLE, None,
             ds_group, ds_table, verbose
         )
 
