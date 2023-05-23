@@ -106,7 +106,7 @@
                     "type":"7z",
                     "filename":"CAGEDMOV202001.7z",
                     "hash_type":"md5",
-                    "hash":"7679428b2d6f8f46e7f2e9ecce0f755d",
+                    "hash":"b13d99ecc9e9ea42b01533ca203d362c",
                     "data_file":"CAGEDMOV202001.txt",
                     "target_file": "CAGEDMOV202001.csv",
                     "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2020/202001/CAGEDMOV202001.7z"
@@ -117,7 +117,7 @@
                     "type":"7z",
                     "filename":"CAGEDMOV202002.7z",
                     "hash_type":"md5",
-                    "hash":"1cd41a536bad8a54916c56ce1e1f230f",
+                    "hash":"4c5ef39561e669cbfdaa93ce39fc3465",
                     "data_file":"CAGEDMOV202002.txt",
                     "target_file":"CAGEDMOV202002.csv",
                     "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2020/202002/CAGEDMOV202002.7z"
@@ -128,7 +128,7 @@
                     "type":"7z",
                     "filename":"CAGEDMOV202003.7z",
                     "hash_type":"md5",
-                    "hash":"bba5106b3f34cd976755eff2b45e2ffa",
+                    "hash":"02dd55c47ad74a7454e190bab0b40e2f",
                     "data_file":"CAGEDMOV202003.txt",
                     "target_file":"CAGEDMOV202003.csv",
                     "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2020/202003/CAGEDMOV202003.7z"
@@ -139,7 +139,7 @@
                     "type":"7z",
                     "filename":"CAGEDMOV202004.7z",
                     "hash_type":"md5",
-                    "hash":"d7c732326e4a9dccf5280049b834286f",
+                    "hash":"e679339d49dd4f4f3d04735211423179",
                     "data_file":"CAGEDMOV202004.txt",
                     "target_file":"CAGEDMOV202004.csv",
                     "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2020/202004/CAGEDMOV202004.7z"
@@ -150,7 +150,7 @@
                     "type":"7z",
                     "filename":"CAGEDMOV202005.7z",
                     "hash_type":"md5",
-                    "hash":"b281462e238e91cdc96d5aae815f9368",
+                    "hash":"143663ddd10c51009d04371dbdd47c70",
                     "data_file":"CAGEDMOV202005.txt",
                     "target_file":"CAGEDMOV202005.csv",
                     "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2020/202005/CAGEDMOV202005.7z"
@@ -161,7 +161,7 @@
                     "type":"7z",
                     "filename":"CAGEDMOV202006.7z",
                     "hash_type":"md5",
-                    "hash":"041d728f424510bc2dd9a7fa1cae4037",
+                    "hash":"14a8a70afd39380c4039257f531ef5f8",
                     "data_file":"CAGEDMOV202006.txt",
                     "target_file":"CAGEDMOV202006.csv",
                     "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2020/202006/CAGEDMOV202006.7z"
@@ -172,7 +172,7 @@
                     "type":"7z",
                     "filename":"CAGEDMOV202007.7z",
                     "hash_type":"md5",
-                    "hash":"5a65828872a576b0a9b2e5d1fe5e04e7",
+                    "hash":"370135ba7b8bbc112d61c502f48ee5af",
                     "data_file":"CAGEDMOV202007.txt",
                     "target_file":"CAGEDMOV202007.csv",
                     "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2020/202007/CAGEDMOV202007.7z"
@@ -183,7 +183,7 @@
                     "type":"7z",
                     "filename":"CAGEDMOV202008.7z",
                     "hash_type":"md5",
-                    "hash":"698bf0020bffc3569d47c383ac7dea4e",
+                    "hash":"562e7e3adf0d7298774b1ff521dcc832",
                     "data_file":"CAGEDMOV202008.txt",
                     "target_file":"CAGEDMOV202008.csv",
                     "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2020/202008/CAGEDMOV202008.7z"
@@ -194,7 +194,7 @@
                     "type":"7z",
                     "filename":"CAGEDMOV202009.7z",
                     "hash_type":"md5",
-                    "hash":"5c27062a50d3b1dfe9af5ec2344e6efc",
+                    "hash":"754552a0c78912b9e3696ff51ea68c57",
                     "data_file":"CAGEDMOV202009.txt",
                     "target_file":"CAGEDMOV202009.csv",
                     "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2020/202009/CAGEDMOV202009.7z"
@@ -205,7 +205,7 @@
                     "type":"7z",
                     "filename":"CAGEDMOV202010.7z",
                     "hash_type":"md5",
-                    "hash":"6122504d67e1796d015f3845425e3d21",
+                    "hash":"6a2915908c6c3ec5007f7bd1cec033fb",
                     "data_file":"CAGEDMOV202010.txt",
                     "target_file":"CAGEDMOV202010.csv",
                     "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2020/202010/CAGEDMOV202010.7z"
@@ -216,7 +216,7 @@
                     "type":"7z",
                     "filename":"CAGEDMOV202011.7z",
                     "hash_type":"md5",
-                    "hash":"3e3992a9dfc7dc2ab6bae02e82b35df7",
+                    "hash":"3e9f677c075289c41711a75a40af8ebe",
                     "data_file":"CAGEDMOV202011.txt",
                     "target_file":"CAGEDMOV202011.csv",
                     "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2020/202011/CAGEDMOV202011.7z"
@@ -227,7 +227,7 @@
                     "type":"7z",
                     "filename":"CAGEDMOV202012.7z",
                     "hash_type":"md5",
-                    "hash":"48ed8b1e7c8acd93cfac86b3440dd2b5",
+                    "hash":"c8b21327018ab78ba8b91a3507f4c9d4",
                     "data_file":"CAGEDMOV202012.txt",
                     "target_file":"CAGEDMOV202012.csv",
                     "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2020/202012/CAGEDMOV202012.7z"
@@ -238,7 +238,7 @@
                     "type":"7z",
                     "filename":"CAGEDMOV202101.7z",
                     "hash_type":"md5",
-                    "hash":"d3e21d557323750f5fc91121ad6fe1da",
+                    "hash":"1f464c45be2a004b8836760cf0dd924e",
                     "data_file":"CAGEDMOV202101.txt",
                     "target_file":"CAGEDMOV202101.csv",
                     "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2021/202101/CAGEDMOV202101.7z"
@@ -249,7 +249,7 @@
                     "type":"7z",
                     "filename":"CAGEDMOV202102.7z",
                     "hash_type":"md5",
-                    "hash":"5187ec13c37c9478c39018d6b756f522",
+                    "hash":"f81a5b74f8e19bf21844b70188f71512",
                     "data_file":"CAGEDMOV202102.txt",
                     "target_file":"CAGEDMOV202102.csv",
                     "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2021/202102/CAGEDMOV202102.7z"
@@ -260,8 +260,8 @@
                     "type":"7z",
                     "filename":"CAGEDMOV202103.7z",
                     "hash_type":"md5",
-                    "hash":"48e07749fce1f5aafbd1b8c9fc0a6c6e",
                     "data_file":"CAGEDMOV202103.txt",
+          "hash":"22b5d8697cfa3cb0c534eab12b763c3b",
                     "target_file":"CAGEDMOV202103.csv",
                     "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2021/202103/CAGEDMOV202103.7z"
                 },
@@ -271,7 +271,7 @@
                     "type":"7z",
                     "filename":"CAGEDMOV202104.7z",
                     "hash_type":"md5",
-                    "hash":"a38fea6a58d18e0e43b33803a3451e4a",
+                    "hash":"08c122e111bd184f7febd9666349fd7f",
                     "data_file":"CAGEDMOV202104.txt",
                     "target_file":"CAGEDMOV202104.csv",
                     "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2021/202104/CAGEDMOV202104.7z"
@@ -282,7 +282,7 @@
                     "type":"7z",
                     "filename":"CAGEDMOV202105.7z",
                     "hash_type":"md5",
-                    "hash":"78f44ae64d9a6166c559019e3a9bff01",
+                    "hash":"ffdd77ddc2dbeb30d7ce64472e9ece13",
                     "data_file":"CAGEDMOV202105.txt",
                     "target_file":"CAGEDMOV202105.csv",
                     "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2021/202105/CAGEDMOV202105.7z"
@@ -293,7 +293,7 @@
                     "type":"7z",
                     "filename":"CAGEDMOV202106.7z",
                     "hash_type":"md5",
-                    "hash":"e679f67861ea17c1485b156de7c496f5",
+                    "hash":"76b41edb9d18a6bf5a58f7a57b058ccf",
                     "data_file":"CAGEDMOV202106.txt",
                     "target_file":"CAGEDMOV202106.csv",
                     "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2021/202106/CAGEDMOV202106.7z"
@@ -304,7 +304,7 @@
                     "type":"7z",
                     "filename":"CAGEDMOV202107.7z",
                     "hash_type":"md5",
-                    "hash":"681a573ef8e2ebd3380f8545211e4f2a",
+                    "hash":"2077397e55d76725fe1b5baac947bb6e",
                     "data_file":"CAGEDMOV202107.txt",
                     "target_file":"CAGEDMOV202107.csv",
                     "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2021/202107/CAGEDMOV202107.7z"
@@ -315,7 +315,7 @@
                     "type":"7z",
                     "filename":"CAGEDMOV202108.7z",
                     "hash_type":"md5",
-                    "hash":"71311f4fa293504d95db7eb707670dfa",
+                    "hash":"34bbf778b580bdd0ab55efb3ba259b72",
                     "data_file":"CAGEDMOV202108.txt",
                     "target_file":"CAGEDMOV202108.csv",
                     "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2021/202108/CAGEDMOV202108.7z"
@@ -326,7 +326,7 @@
                     "type":"7z",
                     "filename":"CAGEDMOV202109.7z",
                     "hash_type":"md5",
-                    "hash":"e55bb1e169953aef3987e0aca0d23614",
+                    "hash":"2d5bb71dca9c3bfbfb8d5d867aaa128d",
                     "data_file":"CAGEDMOV202109.txt",
                     "target_file":"CAGEDMOV202109.csv",
                     "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2021/202109/CAGEDMOV202109.7z"
@@ -337,7 +337,7 @@
                     "type":"7z",
                     "filename":"CAGEDMOV202110.7z",
                     "hash_type":"md5",
-                    "hash":"6180fac1ddf5061b0897c4e3f72cf2f8",
+                    "hash":"6f60903b78f2e798e49c896509cbb3ee",
                     "data_file":"CAGEDMOV202110.txt",
                     "target_file":"CAGEDMOV202110.csv",
                     "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2021/202110/CAGEDMOV202110.7z"
@@ -348,7 +348,7 @@
                     "type":"7z",
                     "filename":"CAGEDMOV202111.7z",
                     "hash_type":"md5",
-                    "hash":"8722a5d08a1526b93fc6ec32f7fc8cad",
+                    "hash":"6d95038b34cf9ff98b0212eff701563a",
                     "data_file":"CAGEDMOV202111.txt",
                     "target_file":"CAGEDMOV202111.csv",
                     "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2021/202111/CAGEDMOV202111.7z"
@@ -359,7 +359,7 @@
                     "type":"7z",
                     "filename":"CAGEDMOV202112.7z",
                     "hash_type":"md5",
-                    "hash":"1d58c382c9bc25003df53706f5683c60",
+                    "hash":"781b1086b59db96d8af23a41a48cae3e",
                     "data_file":"CAGEDMOV202112.txt",
                     "target_file":"CAGEDMOV202112.csv",
                     "url":"ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/2021/202112/CAGEDMOV202112.7z"
@@ -400,7 +400,7 @@
                     "type":"zip",
                     "filename":"microdados_censo_escolar_2022.zip",
                     "hash_type":"md5",
-                    "hash":"5329bd90a90b79276e1fa9ecfcfe01bb",
+                    "hash":"e6d1151b8a243b36f62052ab82c192e2",
                     "data_file":"Microdados do Censo Escolar da Educaç╞o Básica 2022/dados/microdados_ed_basica_2022.csv",
                     "target_file": "microdados_ed_basica_2022.csv",
                     "url":"https://download.inep.gov.br/dados_abertos/microdados_censo_escolar_2022.zip"
