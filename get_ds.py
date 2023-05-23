@@ -49,7 +49,7 @@ class Fetcher:
 
         return fhash.hexdigest()
 
-    def get(self, url, fname=False, verify=False):
+    def get(self, url, fname, verify=False):
         '''Download file from url (using requests, then urllib in case of error)
 
         Parameters
@@ -63,13 +63,14 @@ class Fetcher:
                 Check SSL Certificate
         '''
         try:
-            fname = self.get_urllib(url, fname)
+            downloaded_fname = self.get_urllib(url, fname)
+            if not downloaded_fname:
+                log.warning(
+                    f'Unable to download "{url}" using urllib . Trying requests lib'
+                )
+                raise Exception("Unable to download using urllib")
 
-        except Exception as e:
-
-            log.warning(
-                f'Unable to download using urllib: {e}. Trying requests lib'
-            )
+        except Exception:
 
             try:
                 fname = self.get_requests(url, fname, verify=verify)
@@ -82,7 +83,7 @@ class Fetcher:
 
         return fname
 
-    def get_requests(self, url, fname=False, verify=False):
+    def get_requests(self, url, fname=None, verify=False):
         '''Download file from url using requests library
         '''
         r = requests.get(
@@ -106,7 +107,7 @@ class Fetcher:
         p.finish()
         return fname
 
-    def get_urllib(self, url, to):
+    def get_urllib(self, url, fname):
         '''Download file from url using urllib (works for ftp urls)
         '''
         self.p = None
@@ -114,9 +115,9 @@ class Fetcher:
         def update(blocks, bs, size):
             if not self.p:
                 if size < 0:
-                    self.p = Spinner(to)
+                    self.p = Spinner(fname)
                 else:
-                    self.p = Bar(to, max=size)
+                    self.p = Bar(fname, max=size)
             else:
                 if size < 0:
                     self.p.update()
@@ -125,10 +126,10 @@ class Fetcher:
 
         try:
             ssl._create_default_https_context = ssl._create_unverified_context
-            urlretrieve(url, to, update)
+            urlretrieve(url, fname, update)
         except ssl.SSLCertVerificationError or ssl.SSLError:
             ssl._create_default_https_context = ssl._create_unverified_context
-            urlretrieve(url, to, update)
+            urlretrieve(url, fname, update)
         except urllib.error.HTTPError as e:
             log.error(f'ERR: {e.code} {e.reason}. {url}\n')
             return
@@ -137,12 +138,13 @@ class Fetcher:
                 ctx = ssl.create_default_context()
                 ctx.check_hostname = False
                 ctx.verify_mode = ssl.CERT_NONE
-                urlretrieve(url, to, update)
+                urlretrieve(url, fname, update)
             except Exception as e:
                 log.error(f'\t{e}. {url}\n')
             return
 
-        self.p.finish()
+        # self.p.finish()
+        return fname
 
 def read_json(filename):
 
@@ -219,5 +221,5 @@ if __name__ == '__main__':
 
     except Exception as e:
         log.warning(f'Unable to process dataset "{ds["id"]}". {e}')
-        pass
 
+        pass
