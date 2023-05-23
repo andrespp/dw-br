@@ -1,7 +1,5 @@
 import pandas as pd
-import numpy as np
 import dask.dataframe as dd
-from unidecode import unidecode
 from math import ceil
 
 TABLE_NAME = 'dim_date'
@@ -64,7 +62,14 @@ def transform(df, dw=None, dw_sample=None, verbose=False):
     df['WEEK_OF_MONTH_NUMBER'] = df['Date'].apply(week_of_month)
     df["YEAR_HALF_NUMBER"] = (df.QUARTER_NUMBER + 1) // 2
     df.set_index('DATE_SK', inplace=True)
+
+    # Set surrogate keys
+    df.reset_index(inplace=True, drop=True)
+    df['date_sk'] = df.index + 1
+
+    # select and order columns
     df = df[[
+        'date_sk',
         'YEAR_NUMBER', 'YEARMO_NUMBER', 'MONTH_NUMBER', 'DAY_OF_YEAR_NUMBER',
         'DAY_OF_MONTH_NUMBER', 'DAY_OF_WEEK_NUMBER', 'WEEK_OF_YEAR_NUMBER',
         'DAY_NAME', 'MONTH_NAME', 'MONTH_SHORT_NAME', 'QUARTER_NUMBER',
@@ -74,41 +79,10 @@ def transform(df, dw=None, dw_sample=None, verbose=False):
 
     # Lowercase columns names
     df.columns = [x.lower() for x in df.columns]
-
     df_len = len(df)
 
-    if(verbose):
-        print(f'{df_len} registries transformed.')
-
-    return df, df_len
-
-
-def transform_dask(df, dw=None, verbose=False):
-    """Transform data
-
-    Parameters
-    ----------
-        df | Pandas DataFrame
-
-        dw | DataWarehouse Object
-            Object to be used in data lookups
-
-    Returns
-    -------
-        data : Pandas DataFrame
-            Data to be tranformed
-    """
-    dw
 
     if(verbose):
-        print('(dask) ', end='', flush=True)
-
-    # Remove special chars and Lowercase columns names
-    new_columns = [unidecode(x.lower()) for x in df.columns]
-    df = df.rename(columns=dict(zip(df.columns, new_columns)))
-
-    if(verbose):
-        df_len = df.map_partitions(len).compute().sum()
         print(f'{df_len} registries transformed.')
 
     return df, df_len
@@ -139,7 +113,7 @@ def load(df, dw=None, dw_sample=None, truncate=False, verbose=False):
 
     else: # target=='postgres':
         return load_postgres(
-            dw, df, truncate=truncate, verbose=verbose, chunksize=chunksize
+            dw, df, truncate=truncate, verbose=verbose
         )
 
 def load_postgres(dw, df, truncate=False, verbose=False, chunksize=None):
@@ -210,8 +184,9 @@ def load_dask(dw, df, verbose=False):
     # Write parquet files
     dd.from_pandas(df, npartitions=1).to_parquet(datadir)
 
+    df_len = len(df) #df.map_partitions(len).compute().sum()
+
     if(verbose):
-        df_len = len(df) #df.map_partitions(len).compute().sum()
         print(f'{df_len} registries loaded.')
 
     return df, df_len
