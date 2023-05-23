@@ -15,7 +15,7 @@ datasets = {
     },
 
     'dwbr':{
-        'dim':['dim_data'],
+        'dim':['dim_date'],
     }
 
 }

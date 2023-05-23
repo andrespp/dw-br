@@ -1,4 +1,4 @@
-from dw import dim_data
+from dw import dim_date
 from prefect import flow, task
 #from prefect.task_runners import SequentialTaskRunner
 import os
@@ -24,9 +24,9 @@ def dataset_flow(DW, DW_SAMPLE, DATASRC, ds_group, ds_table, verbose):
     # dim
     if set(ds_group).intersection(['all', 'dim']):
 
-        # DIM_DATA
-        if set(ds_table).intersection(['all', 'dim_data']):
-            dim_data_etl.submit(
+        # DIM_DATE
+        if set(ds_table).intersection(['all', 'dim_date']):
+            dim_date_etl.submit(
                 DW, DW_SAMPLE, DATASRC, verbose
             )
 
@@ -37,13 +37,13 @@ def dataset_flow(DW, DW_SAMPLE, DATASRC, ds_group, ds_table, verbose):
     return stats
 
 @task(
-    name='DIM_DATA ETL',
+    name='DIM_DATE ETL',
     description='ETL Process',
     tags=['caged', 'staging'],
 )
-def dim_data_etl(DW, DW_SAMPLE, DATASRC, verbose):
+def dim_date_etl(DW, DW_SAMPLE, DATASRC, verbose):
 
-    table_name='dim_data'
+    table_name='dim_date'
 
     # Track execution time
     le = lt = ll = 0
@@ -51,9 +51,9 @@ def dim_data_etl(DW, DW_SAMPLE, DATASRC, verbose):
 
     ddf, le = None, 0
 
-    ddf, lt = dim_data.transform(ddf, DW, DW_SAMPLE, verbose)
+    ddf, lt = dim_date.transform(ddf, DW, DW_SAMPLE, verbose)
 
-    ddf, ll = dim_data.load(ddf, DW, truncate=True, verbose=verbose)
+    ddf, ll = dim_date.load(ddf, DW, truncate=True, verbose=verbose)
 
     #if DW_SAMPLE:
     #    df = stg_<dsname>.load(
