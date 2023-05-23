@@ -119,9 +119,15 @@ def trigger_etl(
 
     # Global stats
     global_stats = {}
+
     if municipios_ds_stats:
         global_stats['municipiosbrasileiros'] = municipios_ds_stats
-    if caged_ds_stats: global_stats['caged'] = caged_ds_stats
+
+    if caged_ds_stats:
+        global_stats['caged'] = caged_ds_stats
+
+    if dwbr_ds_stats:
+        global_stats['dwbr'] = dwbr_ds_stats
 
     if verbose:
         print_etl_summary(global_stats)
