@@ -1,6 +1,6 @@
 from modules import municipiosbrasileiros, caged, dwbr
 from prefect import flow, task
-from prefect.task_runners import SequentialTaskRunner
+# from prefect.task_runners import SequentialTaskRunner
 import os
 
 # Used by the CLI
@@ -15,7 +15,7 @@ datasets = {
     },
 
     'dwbr':{
-        'dim':['dim_date'],
+        'dim':['dim_date', 'dim_sexo'],
     }
 
 }
