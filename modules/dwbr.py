@@ -1,4 +1,4 @@
-from dw import dim_date, dim_sexo
+from dw import dim_date, dim_sexo, dim_municipio
 from prefect import flow, task
 #from prefect.task_runners import SequentialTaskRunner
 import os
@@ -17,6 +17,12 @@ def dataset_flow(DW, DW_SAMPLE, DATASRC, ds_group, ds_table, verbose):
 
     global stats
 
+    # Check datasrc
+    if os.path.isdir(DATASRC):
+        pass # parquet src dir exists
+    else:
+        raise NotImplementedError # sql
+
     # stg
     if set(ds_group).intersection(['all', 'stg']):
         print('INFO: DWBR has no stagging tables.')
@@ -33,6 +39,11 @@ def dataset_flow(DW, DW_SAMPLE, DATASRC, ds_group, ds_table, verbose):
         if set(ds_table).intersection(['all', 'dim_sexo']):
             dim_sexo_etl.submit(
                 DW, DW_SAMPLE, verbose
+            )
+        # DIM_MUNICIPIO
+        if set(ds_table).intersection(['all', 'dim_municipio']):
+            dim_municipio_etl.submit(
+                DW, DW_SAMPLE, DATASRC, verbose
             )
 
     # fact
@@ -118,3 +129,38 @@ def dim_sexo_etl(DW, DW_SAMPLE, verbose):
     )
     return ddf
 
+@task(
+    name='DIM_MUNICIPIO_ETL',
+    description='ETL Process',
+    tags=['dwbr', 'dimension'],
+)
+def dim_municipio_etl(DW, DW_SAMPLE, DATASRC, verbose):
+
+    table_name='dim_municipio'
+
+    # Track execution time
+    le = lt = ll = 0
+    start_time = time.time()
+
+    ddf, le = dim_municipio.extract(DATASRC, verbose)
+
+    ddf, lt = dim_municipio.transform(ddf, DW, DW_SAMPLE, verbose)
+
+    ddf, ll = dim_municipio.load(ddf, DW, verbose=verbose)
+
+    global stats
+
+    # Track execution time
+    duration = (time.time() - start_time) / 60
+
+    stats.update(
+        {
+            table_name:{
+                'extract':le,
+                'transform':lt,
+                'load':ll,
+                'duration':duration,
+            }
+        }
+    )
+    return ddf

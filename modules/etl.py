@@ -15,7 +15,7 @@ datasets = {
     },
 
     'dwbr':{
-        'dim':['dim_date', 'dim_sexo'],
+        'dim':['dim_date', 'dim_sexo', 'dim_municipio'],
     }
 
 }
@@ -113,8 +113,12 @@ def trigger_etl(
     if set(ds_name).intersection(set(['all', 'dwbr'])):
 
         dwbr_ds_stats = dwbr.dataset_flow(
-            DW, DW_SAMPLE, None,
-            ds_group, ds_table, verbose
+            DW=DW,
+            DW_SAMPLE=DW_SAMPLE,
+            DATASRC=DW,
+            ds_group=ds_group,
+            ds_table=ds_table,
+            verbose=verbose,
         )
 
     # Global stats
