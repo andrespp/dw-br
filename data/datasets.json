@@ -45,6 +45,13 @@
         },
 
         {
+            "id":"dados.gov.br",
+            "name":"Portal Brasileiro de Dados Abertos",
+            "description":"",
+            "link":"https://dados.gov.br/home"
+        },
+
+        {
             "id":"",
             "name":"",
             "description":"",
@@ -422,12 +429,37 @@
         },
 
         {
+            "id":"cnaes",
+            "name":"Classificação Nacional de Atividades Econômicas",
+            "link":"https://dados.gov.br/dados/conjuntos-dados/cadastro-nacional-da-pessoa-juridica---cnpj",
+            "publisher":"Ministério da Economia",
+            "repository":"dados.gov.br",
+            "metadata":"https://www.gov.br/receitafederal/dados/cnpj-metadados.pdf",
+            "portal":"https://cnae.ibge.gov.br/classificacoes/download-concla/8265-download",
+            "theme":"Economia e Finanças",
+            "description":"O que é CNAE de uma empresa? A Classificação Nacional de Atividades Econômicas é utilizada para determinar quais atividades são exercidas por uma empresa. Obrigatória a todas as pessoas jurídicas, inclusive autônomos e organizações sem fins lucrativos, a CNAE é essencial para obtenção do CNPJ",
+            "resources": [
+                {
+                    "description":"cnaes",
+                    "obs":"",
+                    "type":"zip",
+                    "filename":"cnaes.zip",
+                    "hash_type":"md5",
+                    "hash":"e218ed365c9bdf6ecc6f38a88f304192",
+                    "data_file":"F.K03200$Z.D30513.CNAECSV",
+                    "target_file": "cnaes.csv",
+                    "url":"https://dadosabertos.rfb.gov.br/CNPJ/cnaes.zip"
+                }
+            ]
+        },
+
+        {
             "id":"",
             "name":"",
             "link":"",
             "publisher":"",
             "repository":"",
-			"metadata":"",
+            "metadata":"",
             "portal":"",
             "theme":"tdb",
             "description":"",
