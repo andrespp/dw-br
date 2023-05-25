@@ -1,10 +1,14 @@
-from modules import municipiosbrasileiros, caged, dwbr
+from modules import cnae, municipiosbrasileiros, caged, dwbr
 from prefect import flow, task
 # from prefect.task_runners import SequentialTaskRunner
 import os
 
 # Used by the CLI
 datasets = {
+
+    'cnae':{
+        'stg':['stg_cnaes'],
+    },
 
     'municipios':{
         'stg':['stg_municipiosbrasileiros'],
@@ -90,6 +94,15 @@ def trigger_etl(
             """
         )
 
+    # "cnae" tables flow
+    cnae_ds_stats = None
+    if set(ds_name).intersection(set(['all', 'cnae'])):
+
+        cnae_ds_stats = cnae.dataset_flow(
+            DW, DW_SAMPLE, CONFIG['CNAE']['FILE'],
+            ds_group, ds_table, verbose
+        )
+
     # "municipiosbrasileiros" tables flow
     municipios_ds_stats = None
     if set(ds_name).intersection(set(['all', 'municipiosbrasileiros'])):
@@ -123,6 +136,9 @@ def trigger_etl(
 
     # Global stats
     global_stats = {}
+
+    if cnae_ds_stats:
+        global_stats['cnae'] = cnae_ds_stats
 
     if municipios_ds_stats:
         global_stats['municipiosbrasileiros'] = municipios_ds_stats
