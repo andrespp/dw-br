@@ -435,7 +435,7 @@
             "publisher":"Ministério da Economia",
             "repository":"dados.gov.br",
             "metadata":"https://www.gov.br/receitafederal/dados/cnpj-metadados.pdf",
-            "portal":"https://cnae.ibge.gov.br/classificacoes/download-concla/8265-download",
+            "portal": ["https://cnae.ibge.gov.br/classificacoes/download-concla/8265-download", "http://pdet.mte.gov.br/o-programa/tabelas-de-classificacao"],
             "theme":"Economia e Finanças",
             "description":"O que é CNAE de uma empresa? A Classificação Nacional de Atividades Econômicas é utilizada para determinar quais atividades são exercidas por uma empresa. Obrigatória a todas as pessoas jurídicas, inclusive autônomos e organizações sem fins lucrativos, a CNAE é essencial para obtenção do CNPJ",
             "resources": [
