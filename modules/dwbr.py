@@ -1,4 +1,7 @@
-from dw import dim_date, dim_sexo, dim_municipio
+from dw import dim_cnae
+from dw import dim_date
+from dw import dim_municipio
+from dw import dim_sexo
 from prefect import flow, task
 #from prefect.task_runners import SequentialTaskRunner
 import os
@@ -30,6 +33,12 @@ def dataset_flow(DW, DW_SAMPLE, DATASRC, ds_group, ds_table, verbose):
     # dim
     if set(ds_group).intersection(['all', 'dim']):
 
+        # DIM_CNAE
+        if set(ds_table).intersection(['all', 'dim_cnae']):
+            dim_cnae_etl.submit(
+                DW, DW_SAMPLE, DATASRC, verbose
+            )
+
         # DIM_DATE
         if set(ds_table).intersection(['all', 'dim_date']):
             dim_date_etl.submit(
@@ -51,6 +60,47 @@ def dataset_flow(DW, DW_SAMPLE, DATASRC, ds_group, ds_table, verbose):
         print('INFO: DWBR has no fact tables.')
 
     return stats
+
+@task(
+    name='DIM_CNAE ETL',
+    description='ETL Process',
+    tags=['dwbr', 'dimension'],
+)
+def dim_cnae_etl(DW, DW_SAMPLE, DATASRC, verbose):
+
+    table_name='dim_cnae'
+
+    # Track execution time
+    le = lt = ll = 0
+    start_time = time.time()
+
+    df, le = dim_cnae.extract(DATASRC, verbose)
+
+    df, lt = dim_cnae.transform(df, DW, DW_SAMPLE, verbose)
+
+    df, ll = dim_cnae.load(df, DW, verbose=verbose)
+
+    #if DW_SAMPLE:
+    #    df = stg_<dsname>.load(
+    #        DW_SAMPLE, df, truncate=True, verbose=verbose
+    #    )
+
+    global stats
+
+    # Track execution time
+    duration = (time.time() - start_time) / 60
+
+    stats.update(
+        {
+            table_name:{
+                'extract':le,
+                'transform':lt,
+                'load':ll,
+                'duration':duration,
+            }
+        }
+    )
+    return df
 
 @task(
     name='DIM_DATE ETL',

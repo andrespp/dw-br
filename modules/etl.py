@@ -19,7 +19,9 @@ datasets = {
     },
 
     'dwbr':{
-        'dim':['dim_date', 'dim_sexo', 'dim_municipio'],
+        'dim':[
+            'dim_cnae', 'dim_date', 'dim_municipio', 'dim_sexo',
+            ],
     }
 
 }
