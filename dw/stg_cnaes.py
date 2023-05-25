@@ -26,7 +26,7 @@ def extract(ds_files, verbose=False):
         'classe':'str',
     }
 
-    cols = ['cnae', 'classe']
+    cols = ['cnae', 'descricao_atividade_economica']
 
     # Data fits in memory, using Pandas
     df = pd.read_csv(
