@@ -454,6 +454,53 @@
         },
 
         {
+            "id":"cbo2002",
+            "name":"Classificação Brasileira de Ocupações (CBO)",
+            "link":"http://www.mtecbo.gov.br/cbosite/pages/informacoesGerais.jsf",
+            "publisher":"mte",
+            "repository":"http://www.mtecbo.gov.br/cbosite/pages/downloads.jsf",
+            "metadata":"http://www.mtecbo.gov.br/cbosite/pages/downloads.jsf",
+            "portal":"https://github.com/lucassmacedo/cbo-brasil",
+            "theme":"Economia e Finanças",
+            "description":"A Classificação Brasileira de Ocupações - CBO é o documento normalizador do reconhecimento (1) , da nomeação e da codificação dos títulos e conteúdos das ocupações do mercado de trabalho brasileiro. É ao mesmo tempo uma classificação enumerativa e uma classificação descritiva.",
+            "resources": [
+                {
+                    "description":"CBO - Grande Grupo",
+                    "obs":"",
+                    "type":"csv",
+                    "filename":"cbo2002_grande_grupo.csv",
+                    "hash_type":"md5",
+                    "hash":"407e50d51f964a8b35462cddf627b3ba",
+                    "data_file":"CBO2002%20-%20Grande%20Grupo.csv",
+                    "target_file": "cbo2002_grande_grupo.csv",
+                    "url":"https://raw.githubusercontent.com/andrespp/cbo-brasil/master/csv/CBO2002%20-%20Grande%20Grupo.csv"
+                },
+                {
+                    "description":"CBO - Familia",
+                    "obs":"",
+                    "type":"csv",
+                    "filename":"cbo2002_familia.csv",
+                    "hash_type":"md5",
+                    "hash":"40adbeeb8006c608dbf50571d750ef8b",
+                    "data_file":"CBO2002%20-%20Familia.csv",
+                    "target_file": "cbo2002_familia.csv",
+                    "url":"https://raw.githubusercontent.com/andrespp/cbo-brasil/master/csv/CBO2002%20-%20Familia.csv"
+                },
+                {
+                    "description":"CBO - Ocupacao",
+                    "obs":"",
+                    "type":"csv",
+                    "filename":"cbo2002_ocupacao.csv",
+                    "hash_type":"md5",
+                    "hash":"1db80d6976db173998bf0e723d3982b1",
+                    "data_file":"CBO2002%20-%20Ocupacao.csv",
+                    "target_file": "cbo2002_ocupacao.csv",
+                    "url":"https://raw.githubusercontent.com/andrespp/cbo-brasil/master/csv/CBO2002%20-%20Ocupacao.csv"
+                }
+            ]
+        },
+
+        {
             "id":"",
             "name":"",
             "link":"",
