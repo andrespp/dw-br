@@ -476,6 +476,28 @@
                     "url":"https://raw.githubusercontent.com/andrespp/cbo-brasil/master/csv/CBO2002%20-%20Grande%20Grupo.csv"
                 },
                 {
+                    "description":"CBO - Subgrupo Principal",
+                    "obs":"",
+                    "type":"csv",
+                    "filename":"cbo2002_subgrupo_principal.csv",
+                    "hash_type":"md5",
+                    "hash":"6b9c70a857d158b6a6c2f49d5df406e4",
+                    "data_file":"CBO2002%20-%20SubGrupo%20Principal.csv",
+                    "target_file": "cbo2002_subgrupo_principal.csv",
+                    "url":"https://raw.githubusercontent.com/andrespp/cbo-brasil/master/csv/CBO2002%20-%20SubGrupo%20Principal.csv"
+                },
+                {
+                    "description":"CBO - Subgrupo",
+                    "obs":"",
+                    "type":"csv",
+                    "filename":"cbo2002_subgrupo.csv",
+                    "hash_type":"md5",
+                    "hash":"9217c4e1dc98c3dce3fd6da82384021b",
+                    "data_file":"CBO2002%20-%20SubGrupo.csv",
+                    "target_file": "cbo2002_subgrupo.csv",
+                    "url":"https://raw.githubusercontent.com/andrespp/cbo-brasil/master/csv/CBO2002%20-%20SubGrupo.csv"
+                },
+                {
                     "description":"CBO - Familia",
                     "obs":"",
                     "type":"csv",
