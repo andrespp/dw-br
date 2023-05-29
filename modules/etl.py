@@ -16,6 +16,7 @@ datasets = {
         'stg':[
             'stg_cbo2002_grande_grupo',
             'stg_cbo2002_subgrupo_principal',
+            'stg_cbo2002_subgrupo',
             ],
     },
 
