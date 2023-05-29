@@ -75,7 +75,7 @@ def stg_cbo2002_grande_grupo_etl(DW, DW_SAMPLE, DATASRC, verbose):
 
     stats.update(
         {
-            'stg_cbo2002':{
+            'stg_cbo2002_grande_grupo':{
                 'extract':le,
                 'transform':lt,
                 'load':ll,
@@ -107,7 +107,7 @@ def stg_cbo2002_subgrupo_principal_etl(DW, DW_SAMPLE, DATASRC, verbose):
 
     stats.update(
         {
-            'stg_cbo2002':{
+            'stg_cbo2002_subgrupo_principal':{
                 'extract':le,
                 'transform':lt,
                 'load':ll,
