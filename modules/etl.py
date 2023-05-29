@@ -13,7 +13,10 @@ datasets = {
     },
 
     'cbo2002':{
-        'stg':['stg_cbo2002_grande_grupo'],
+        'stg':[
+            'stg_cbo2002_grande_grupo',
+            'stg_cbo2002_subgrupo_principal',
+            ],
     },
 
     'municipios':{
