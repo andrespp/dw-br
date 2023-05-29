@@ -18,6 +18,7 @@ datasets = {
             'stg_cbo2002_subgrupo_principal',
             'stg_cbo2002_subgrupo',
             'stg_cbo2002_familia',
+            'stg_cbo2002_ocupacao',
             ],
     },
 
