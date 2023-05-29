@@ -48,6 +48,11 @@ def transform(df, dw=None, dw_sample=None, verbose=False):
     if(verbose):
         print('{}: Transform. '.format(TABLE_NAME), end='', flush=True)
 
+    # cod
+    df['subgrupo_principal'] = df['subgrupo_principal'].apply(
+        lambda x: str(x).zfill(2)
+    )
+
     # Dataset len
     df_len = len(df)
 
