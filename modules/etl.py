@@ -1,13 +1,19 @@
-from modules import cnae, municipiosbrasileiros, caged, dwbr
-from prefect import flow, task
+from modules import caged
+from modules import cbo2002
+from modules import cnae
+from modules import dwbr
+from modules import municipiosbrasileiros
 # from prefect.task_runners import SequentialTaskRunner
-import os
 
 # Used by the CLI
 datasets = {
 
     'cnae':{
         'stg':['stg_cnaes'],
+    },
+
+    'cbo2002':{
+        'stg':['stg_cbo2002_grande_grupo'],
     },
 
     'municipios':{
@@ -105,6 +111,15 @@ def trigger_etl(
             ds_group, ds_table, verbose
         )
 
+    # "cbo2002" tables flow
+    cbo2002_ds_stats = None
+    if set(ds_name).intersection(set(['all', 'cbo2002'])):
+
+        cbo2002_ds_stats = cbo2002.dataset_flow(
+            DW, DW_SAMPLE, CONFIG['CBO2002'],
+            ds_group, ds_table, verbose
+        )
+
     # "municipiosbrasileiros" tables flow
     municipios_ds_stats = None
     if set(ds_name).intersection(set(['all', 'municipiosbrasileiros'])):
@@ -141,6 +156,9 @@ def trigger_etl(
 
     if cnae_ds_stats:
         global_stats['cnae'] = cnae_ds_stats
+
+    if cbo2002_ds_stats:
+        global_stats['cbo2002'] = cbo2002_ds_stats
 
     if municipios_ds_stats:
         global_stats['municipiosbrasileiros'] = municipios_ds_stats
