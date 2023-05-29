@@ -12,7 +12,7 @@ def extract(ds_config, verbose=False):
     if(verbose):
         print(f'{TABLE_NAME}: Extract. ', end='', flush=True)
 
-    ds_file = ds_config['GG']
+    ds_file = ds_config['GRANDE_GRUPO']
   
     dtype={
         'code':str,
@@ -24,8 +24,9 @@ def extract(ds_config, verbose=False):
     # Data fits in memory, using Pandas
     df = pd.read_csv(
         ds_file,
-        names=cols
-        , sep=';',
+        names=cols,
+        skiprows=[0],
+        sep=';',
         encoding='utf8',
         dtype=dtype,
     )
