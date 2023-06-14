@@ -1,8 +1,9 @@
-from dw import stg_cbo2002_grande_grupo
-from dw import stg_cbo2002_subgrupo_principal
-from dw import stg_cbo2002_subgrupo
+from dw import dim_cbo2002
 from dw import stg_cbo2002_familia
+from dw import stg_cbo2002_grande_grupo
 from dw import stg_cbo2002_ocupacao
+from dw import stg_cbo2002_subgrupo
+from dw import stg_cbo2002_subgrupo_principal
 from prefect import flow, task
 #from prefect.task_runners import SequentialTaskRunner
 import os
@@ -57,7 +58,11 @@ def dataset_flow(DW, DW_SAMPLE, DATASRC, ds_group, ds_table, verbose):
     # dim
     if set(ds_group).intersection(['all', 'dim']):
 
-        pass
+        # DIM_CBO2002
+        if set(ds_table).intersection(['all', 'dim_cbo2002']):
+            dim_cbo2002_etl.submit(
+                DW, DW_SAMPLE, DATASRC, verbose
+            )
 
     # fact
     if set(ds_group).intersection(['all', 'fact']):
@@ -227,3 +232,43 @@ def stg_cbo2002_ocupacao_etl(DW, DW_SAMPLE, DATASRC, verbose):
     )
     return df
 
+@task(
+    name='DIM_CBO2002 ETL',
+    description='ETL Process',
+    tags=['dwbr', 'dimension'],
+)
+def dim_cbo2002_etl(DW, DW_SAMPLE, DATASRC, verbose):
+
+    table_name='dim_cbo2002'
+
+    # Track execution time
+    le = lt = ll = 0
+    start_time = time.time()
+
+    dfs, le = dim_cbo2002.extract(DW, verbose)
+
+    df, lt = dim_cbo2002.transform(dfs, DW, DW_SAMPLE, verbose)
+
+    df, ll = dim_cbo2002.load(df, DW, verbose=verbose)
+
+    #if DW_SAMPLE:
+    #    df = stg_<dsname>.load(
+    #        DW_SAMPLE, df, truncate=True, verbose=verbose
+    #    )
+
+    global stats
+
+    # Track execution time
+    duration = (time.time() - start_time) / 60
+
+    stats.update(
+        {
+            table_name:{
+                'extract':le,
+                'transform':lt,
+                'load':ll,
+                'duration':duration,
+            }
+        }
+    )
+    return df

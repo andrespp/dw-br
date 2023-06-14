@@ -20,6 +20,7 @@ datasets = {
             'stg_cbo2002_familia',
             'stg_cbo2002_ocupacao',
             ],
+        'dim':['dim_cbo2002'],
     },
 
     'municipios':{
