@@ -19,7 +19,7 @@ datasets = {
             'stg_cbo2002_subgrupo',
             'stg_cbo2002_familia',
             'stg_cbo2002_ocupacao',
-            ],
+        ],
         'dim':['dim_cbo2002'],
     },
 
@@ -34,7 +34,10 @@ datasets = {
     'dwbr':{
         'dim':[
             'dim_cnae', 'dim_date', 'dim_municipio', 'dim_sexo',
-            ],
+        ],
+        'fact':[
+            'fato_caged',
+        ],
     }
 
 }

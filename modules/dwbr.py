@@ -2,6 +2,7 @@ from dw import dim_cnae
 from dw import dim_date
 from dw import dim_municipio
 from dw import dim_sexo
+from dw import fato_caged
 from prefect import flow, task
 #from prefect.task_runners import SequentialTaskRunner
 import os
@@ -57,7 +58,12 @@ def dataset_flow(DW, DW_SAMPLE, DATASRC, ds_group, ds_table, verbose):
 
     # fact
     if set(ds_group).intersection(['all', 'fact']):
-        print('INFO: DWBR has no fact tables.')
+
+        # FATO_CAGED
+        if set(ds_table).intersection(['all', 'fato_caged']):
+            fato_caged_etl.submit(
+                DW, DW_SAMPLE, DATASRC, verbose
+            )
 
     return stats
 
@@ -214,3 +220,39 @@ def dim_municipio_etl(DW, DW_SAMPLE, DATASRC, verbose):
         }
     )
     return ddf
+
+@task(
+    name='FATO_CAGED_ETL',
+    description='ETL Process',
+    tags=['dwbr', 'fact'],
+)
+def fato_caged_etl(DW, DW_SAMPLE, DATASRC, verbose):
+
+    table_name='fato_caged'
+
+    # Track execution time
+    le = lt = ll = 0
+    start_time = time.time()
+
+    dfs, le = fato_caged.extract(DW, verbose)
+
+    df, lt = fato_caged.transform(dfs, DW, DW_SAMPLE, verbose)
+
+    df, ll = fato_caged.load(df, DW, verbose=verbose)
+
+    global stats
+
+    # Track execution time
+    duration = (time.time() - start_time) / 60
+
+    stats.update(
+        {
+            table_name:{
+                'extract':le,
+                'transform':lt,
+                'load':ll,
+                'duration':duration,
+            }
+        }
+    )
+    return df
