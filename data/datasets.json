@@ -67,7 +67,7 @@
             "link":"https://www.tesourotransparente.gov.br/ckan/dataset/lista-de-municipios-do-siafi",
             "publisher":"Tesouro Nacional",
             "repository":"tesourotransparente",
-			"metadata":"",
+            "metadata":"https://www.ibge.gov.br/explica/codigos-dos-municipios.php",
             "portal":"https://www.tesourotransparente.gov.br/ckan/dataset/lista-de-municipios-do-siafi",
             "theme":"Geografia",
             "description":"Lista de municípios do SIAFI com código SIAFI e código IBGE",
