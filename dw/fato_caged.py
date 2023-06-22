@@ -24,27 +24,29 @@ def extract(datasrc, verbose=False):
     if(verbose):
         print(f'{TABLE_NAME}: Extract. ', end='', flush=True)
 
-    src_tables = [
-        'dim_municipio',
-        'dim_date',
-        'dim_cbo2002',
-        'dim_sexo',
-        'dim_cnae',
-        'stg_caged',
-    ]
+    src_tables = {
+        'dim_municipio':'pandas',
+        'dim_date':'pandas',
+        'dim_cbo2002':'pandas',
+        'dim_sexo':'pandas',
+        'dim_cnae':'pandas',
+        'stg_caged':'dask',
+    }
 
     # Check datasrc
     dfs = {}
     dfs_len = 0
-    for table in src_tables:
+    for table in src_tables.keys():
 
+        print(f'---> {table}')  ############
         if os.path.isdir(datasrc): # parquet src
             parquet_table_path = os.path.join(
                     datasrc, table
                     )
             if os.path.isdir(parquet_table_path):
-                df, df_len = extract_parquet(parquet_table_path)
-                dfs[table] = df.copy()
+                df_type = src_tables[table]
+                df, df_len = extract_parquet(parquet_table_path, df_type)
+                dfs[table] = df#.copy()
                 dfs_len += df_len
             else:
                 print(f'ERR: "{parquet_table_path}" not found!')
@@ -57,18 +59,27 @@ def extract(datasrc, verbose=False):
 
     return dfs, dfs_len
 
-def extract_parquet(datasrc):
+def extract_parquet(datasrc, df_type):
 
-    df = dd.read_parquet(datasrc)
-    df = df.reset_index(drop=True) # avoid null_dask_index
-    df_len = len(df)
+    df = None
+
+    if df_type == 'pandas':
+        df = pd.read_parquet(datasrc)
+    elif df_type == 'dask':
+        df = dd.read_parquet(datasrc)
+        # df = df.reset_index(drop=True) # avoid null_dask_index
+        # df_len = len(df)
+    else:
+        raise NotImplemented
+
+    df_len = 0 #############################
 
     return df, df_len
 
 ###############################################################################
 # Transform functions
 ###############################################################################
-def transform(dfs, dw=None, dw_sample=None, verbose=False):
+def transform(dfs, dw: str, dw_sample=None, verbose=False):
     """Transform data
 
     Parameters
@@ -86,157 +97,67 @@ def transform(dfs, dw=None, dw_sample=None, verbose=False):
     if(verbose):
         print('{}: Transform. '.format(TABLE_NAME), end='', flush=True)
 
+    print('---> Extract sources', flush=True) ########################
+
     # read sources
-    dim_municipio = dfs['dim_municipio']
-    dim_date = dfs['dim_date']
-    dim_cbo2002 = dfs['dim_cbo2002']
-    dim_sexo = dfs['dim_sexo']
-    dim_cnae = dfs['dim_cnae']
-    df = dfs['stg_caged']
+    print('.dim_municipio', end='', flush=True) ########################
+    dim_municipio = pd.read_parquet(os.path.join(dw, 'dim_municipio'))
+    dim_cnae = pd.read_parquet(os.path.join(dw, 'dim_cnae'))
+    dim_cbo2002 = pd.read_parquet(os.path.join(dw, 'dim_cbo2002'))
+    dim_sexo = pd.read_parquet(os.path.join(dw, 'dim_sexo'))
 
-    # competenciamov
-    df['yearmo_competenciamov_sk'] = df['competenciamov'].apply(
-        int, meta=('competenciamov', 'int64')
-    )
+    print('.stg_caged', end='', flush=True) ########################
+    df = dd.read_parquet(os.path.join(dw, 'stg_caged'))
 
-    #competencia_declaracao
+    print('---> ETL', flush=True) ########################
+
+    # yearmo_mov_sk <- competenciamov
+    print('.yearmo_mov_sk', end='', flush=True) ########################
+    df = df.rename(columns={'competenciamov':'yearmo_mov_sk'})
+    df = df.astype({'yearmo_mov_sk':'int32'})
+
+    # yearmo_dec_sk <- competenciadec
+    print('.yearmo_dec_sk', end='', flush=True) ########################
     if 'competenciadec' not in df.columns:
         df['competenciaexc'] = -1
-    df['yearmo_competencia_declaracao_sk'] = df['competenciadec'].apply(
-        int, meta=('competenciamov', 'int64')
-    )
+    df = df.rename(columns={'competenciadec':'yearmo_dec_sk'})
+    df = df.astype({'yearmo_dec_sk':'int32'})
 
     #competencia_exclusao
+    print('.yearmo_exc_sk', end='', flush=True) ########################
     if 'competenciaexc' not in df.columns:
         df['competenciaexc'] = -1
-    df['yearmo_competencia_exclusao_sk'] = df['competenciaexc'].apply(
-        int, meta=('competenciamov', 'int64')
-    )
+    df = df.rename(columns={'competenciaexc':'yearmo_exc_sk'})
+    df = df.astype({'yearmo_exc_sk':'int32'})
 
-    # municipio_sk
-    df['municipio'] = df['municipio'].apply(int, meta=('municipio','int64'))
+    # saldomovimentacao
+    print('fatos', end='\n', flush=True) ########################
+    df = df.astype({'saldomovimentacao':'int32'})
 
-    dim_municipio['municipio'] = dim_municipio['cod_ibge'].apply(
-        lambda x: int(x/10) # remove 7th digit
-        ,meta=('cod_ibge', 'int64')
-    )
-    dim_municipio = dim_municipio[['municipio_sk', 'municipio']]
-
-    df = df.merge(dim_municipio, on='municipio', how='left')
-    df['municipio_sk'] = df['municipio_sk'].fillna(-1)
-    df['municipio_sk'] = df['municipio_sk'].apply(
-        int, meta=('municipio_sk','int64')
-    )
-
-    # cnae_sk
-    dim_cnae = dim_cnae[['cnae_sk', 'cnae']]
-    df['cnae'] = df['subclasse'].apply(
-        lambda x: x.zfill(7)
-        ,meta=('subclasse', 'str')
-    )
-    df = df.merge(dim_cnae, on='cnae', how='left')
-
-    # cbo2002_sk
-    dim_cbo2002 = dim_cbo2002[['cbo2002_sk', 'ocupacao']]
-    dim_cbo2002['ocupacao'] = dim_cbo2002['ocupacao'].apply(
-        int, meta=('ocupacao', 'int32')
-    )
-    df['ocupacao'] = df['cbo2002ocupacao'].apply(
-        int, meta=('cbo2002ocupacao', 'int32')
-    )
-    df = df.merge(dim_cbo2002, on='ocupacao', how='left')
-    df['cbo2002_sk'] = df['cbo2002_sk'].fillna(-1)
-
-    # saldomovimentacao -> only cast
-
-    # idade -> cast int
+    # idade
     df['idade'] = df['idade'].fillna(-1)
+    df = df.astype({'idade':'int32'})
 
-    # horascontratuais -> only cast
+    # horascontratuais
     df['horascontratuais'] = df['horascontratuais'].fillna(-1)
+    df = df.astype({'horascontratuais':'int32'})
 
-    # salario -> only cast
+    # salario
+    df = df.astype({'salario':'float64'})
 
-    # salario_fixo -> cast  float64
-    df['salario_fixo'] = df['valorsalariofixo']
+    # salario_fixo
+    df = df.rename(columns={'valorsalariofixo':'salario_fixo'})
+    df = df.astype({'salario_fixo':'float64'})
 
-    # categoria
-    df = df.merge(get_categoria_df(), on='categoria', how='left')
-
-    # grau_de_instrucao
-    df = df.rename(columns={"graudeinstrucao": "grau_de_instrucao"})
-    df = df.merge(
-        get_grau_de_instrucao_df(), on='grau_de_instrucao', how='left'
-    )
-
-    # raçacor
-    df = df.rename(columns={'racacor': 'raca_cor'})
-    df = df.merge(
-        get_raca_cor_df(), on='raca_cor', how='left'
-    )
-
-    # sexo
-    dim_sexo['sexo'] = dim_sexo['sexo_novo_caged_cod']
-    df = df.merge(
-        dim_sexo[['sexo_sk', 'sexo']], on='sexo', how='left'
-    )
-
-    # tipoempregador
-    df = df.rename(columns={'tipoempregador':'tipo_empregador'})
-    df = df.merge(
-        get_tipo_empregador_df(), on='tipo_empregador', how='left'
-    )
-
-    # tipoestabelecimento
-    df = df.rename(columns={'tipoestabelecimento':'tipo_estabelecimento'})
-    df = df.merge(
-        get_tipo_estabelecimento_df(), on='tipo_estabelecimento', how='left'
-    )
-
-    # tipomovimentação
-    df = df.rename(columns={'tipomovimentacao':'tipo_movimentacao'})
-    df = df.merge(
-        get_tipo_movimentacao_df(), on='tipo_movimentacao', how='left'
-    )
-
-    # tipodedeficiência
-    df = df.rename(columns={'tipodedeficiencia':'tipo_deficiencia'})
-    df = df.merge(
-        get_tipo_deficiencia_df(), on='tipo_deficiencia', how='left'
-    )
-
-    # indtrabintermitente
-    df = df.rename(columns={'indtrabintermitente':'trabalho_intermitente'})
-    df = df.merge(
-        get_trabalho_intermitente_df(), on='trabalho_intermitente', how='left'
-    )
-
-    # indtrabparcial
-    df = df.rename(columns={'indtrabparcial':'trabalho_parcial'})
-    df = df.merge(
-        get_trabalho_parcial_df(), on='trabalho_parcial', how='left'
-    )
-
-    # tamestabjan
-    df = df.rename(columns={'tamestabjan':'tamanho_estabelecimento_janeiro'})
-    df = df.merge(
-        get_tamanho_estabelecimento_df(),
-        on='tamanho_estabelecimento_janeiro', how='left'
-    )
-
-    # indicadoraprendiz
-    df = df.rename(columns={'indicadoraprendiz':'aprendiz'})
-    df = df.merge(
-        get_aprendiz_df(),
-        on='aprendiz', how='left'
-    )
-
-    # origemdainformação
-    df = df.rename(columns={'origemdainformacao':'origem_informacao'})
-    df = df.merge(
-        get_origem_informacao_df(),
-        on='origem_informacao', how='left'
-    )
+    # indicadordeforadoprazo
+    if 'indicadordeforadoprazo' in df.columns:
+        df = df.rename(columns={'indicadordeforadoprazo':'fora_de_prazo'})
+        df['fora_de_prazo'] = df['fora_de_prazo'].apply(
+            lambda x: bool(x),
+            meta=('fora_de_prazo', 'bool')
+        )
+    else:
+        df['fora_de_prazo'] = False
 
     # indicadordeexclusão
     if 'indicadordeexclusao' in df.columns:
@@ -248,15 +169,43 @@ def transform(dfs, dw=None, dw_sample=None, verbose=False):
     else:
         df['indicador_exclusao'] = False
 
-    # indicadordeforadoprazo
-    if 'indicadordeforadoprazo' in df.columns:
-        df = df.rename(columns={'indicadordeforadoprazo':'fora_de_prazo'})
-        df['fora_de_prazo'] = df['fora_de_prazo'].apply(
-            lambda x: bool(x),
-            meta=('fora_de_prazo', 'bool')
-        )
-    else:
-        df['indicador_exclusao'] = False
+    # municipio_sk
+    print('.municipo_sk', end='', flush=True) ########################
+    dim_municipio = dim_municipio[['municipio_sk', 'cod_ibge']]
+    dim_municipio = dim_municipio.rename(columns={'cod_ibge':'municipio'})
+    dim_municipio['municipio'] = dim_municipio['municipio'].apply(
+        lambda x: int(x/10) # remove 7th digit
+    )
+    df = df.merge(dim_municipio, how='left', on=['municipio'])
+    df['municipio_sk'] = df['municipio_sk'].fillna(-1)
+    df = df.astype({'municipio_sk':'int32'})
+
+    # cnae_sk
+    dim_cnae = dim_cnae[['cnae_sk', 'cnae']]
+    dim_cnae['cnae'] = dim_cnae['cnae'].apply(
+        lambda x: x.zfill(7)
+    )
+    dim_cnae = dim_cnae[['cnae_sk', 'cnae']]
+    df = df.rename(columns={'subclasse':'cnae'})
+    df['cnae'] = df['cnae'].apply(
+        lambda x: x.zfill(7)
+        ,meta=('cnae', 'str')
+    )
+    df = df.merge(dim_cnae, on='cnae', how='left')
+    df['cnae_sk'] = df['cnae_sk'].fillna(-1)
+    df = df.astype({'cnae_sk':'int32'})
+
+    # cbo2002_sk
+    dim_cbo2002 = dim_cbo2002[['cbo2002_sk', 'ocupacao']]
+    dim_cbo2002['ocupacao'] = dim_cbo2002['ocupacao'].apply(int)
+    df = df.rename(columns={'cbo2002ocupacao':'ocupacao'})
+    df['ocupacao'] = df['ocupacao'].fillna(-1)
+    df['ocupacao'] = df['ocupacao'].apply(
+        int, meta=('cbo2002ocupacao', 'int32')
+    )
+    df = df.merge(dim_cbo2002, on='ocupacao', how='left')
+    df['cbo2002_sk'] = df['cbo2002_sk'].fillna(-1)
+    df = df.astype({'cbo2002_sk':'int32'})
 
     # unidadesaláriocódigo
     df = df.rename(columns={'unidadesalariocodigo':'unidade_salario'})
@@ -264,6 +213,165 @@ def transform(dfs, dw=None, dw_sample=None, verbose=False):
         get_unidade_salario_df(),
         on='unidade_salario', how='left'
     )
+    df['unidade_salario'] = df['unidade_salario'].fillna(-1)
+    df = df.astype({'unidade_salario':'int32'})
+
+    # tipoempregador
+    df = df.rename(columns={'tipoempregador':'tipo_empregador'})
+    df = df.merge(
+        get_tipo_empregador_df(), on='tipo_empregador', how='left'
+    )
+    df = df.astype({'tipo_empregador':'int32'})
+
+    # tipoestabelecimento
+    df = df.rename(columns={'tipoestabelecimento':'tipo_estabelecimento'})
+    df = df.merge(
+        get_tipo_estabelecimento_df(), on='tipo_estabelecimento', how='left'
+    )
+    df = df.astype({'tipo_estabelecimento':'int32'})
+
+    # tipomovimentação
+    df = df.rename(columns={'tipomovimentacao':'tipo_movimentacao'})
+    df = df.merge(
+        get_tipo_movimentacao_df(), on='tipo_movimentacao', how='left'
+    )
+    df = df.astype({'tipo_movimentacao':'int32'})
+
+    # indtrabintermitente
+    df = df.rename(columns={'indtrabintermitente':'trabalho_intermitente'})
+    df = df.merge(
+        get_trabalho_intermitente_df(), on='trabalho_intermitente', how='left'
+    )
+    df = df.astype({'trabalho_intermitente':'int32'})
+
+    # indtrabparcial
+    df = df.rename(columns={'indtrabparcial':'trabalho_parcial'})
+    df = df.merge(
+        get_trabalho_parcial_df(), on='trabalho_parcial', how='left'
+    )
+    df = df.astype({'trabalho_parcial':'int32'})
+
+    # tamestabjan
+    df = df.rename(columns={'tamestabjan':'tamanho_estab_janeiro'})
+    df = df.merge(
+        get_tamanho_estabelecimento_df(),
+        on='tamanho_estab_janeiro', how='left'
+    )
+    df = df.astype({'tamanho_estab_janeiro':'int32'})
+
+    # indicadoraprendiz
+    df = df.rename(columns={'indicadoraprendiz':'aprendiz'})
+    df = df.merge(
+        get_aprendiz_df(),
+        on='aprendiz', how='left'
+    )
+    df = df.astype({'aprendiz':'int32'})
+
+    # origemdainformação
+    df = df.rename(columns={'origemdainformacao':'origem_informacao'})
+    df = df.merge(
+        get_origem_informacao_df(),
+        on='origem_informacao', how='left'
+    )
+    df['origem_informacao'] = df['origem_informacao'].fillna(-1)
+    df = df.astype({'origem_informacao':'int32'})
+
+    # categoria
+    df = df.merge(get_categoria_df(), on='categoria', how='left')
+    df = df.astype({'categoria':'int32'})
+
+    # grau_de_instrucao
+    df = df.rename(columns={"graudeinstrucao": "grau_de_instrucao"})
+    df = df.merge(
+        get_grau_de_instrucao_df(), on='grau_de_instrucao', how='left'
+    )
+    df['grau_de_intrucao'] = df['grau_de_instrucao'].fillna(-1)
+    df = df.astype({'grau_de_instrucao':'int32'})
+
+    # raçacor
+    df = df.rename(columns={'racacor': 'raca_cor'})
+    df = df.merge(
+        get_raca_cor_df(), on='raca_cor', how='left'
+    )
+    df['raca_cor'] = df['raca_cor'].fillna(-1)
+    df = df.astype({'raca_cor':'int32'})
+
+    # sexo
+    dim_sexo = dim_sexo.rename(
+        columns={'sexo_novo_caged_cod':'codsexo'}
+    )
+    dim_sexo = dim_sexo[['sexo_sk', 'codsexo']]
+    df = df.rename(columns={'sexo':'codsexo'})
+    df = df.merge(
+        dim_sexo, on='codsexo', how='left'
+    )
+    df = df.astype({'sexo_sk':'int32'})
+
+    # tipodedeficiência
+    df = df.rename(columns={'tipodedeficiencia':'tipo_deficiencia'})
+    df = df.merge(
+        get_tipo_deficiencia_df(), on='tipo_deficiencia', how='left'
+    )
+    df['tipo_deficiencia'] = df['tipo_deficiencia'].fillna(-1)
+    df = df.astype({'tipo_deficiencia':'int32'})
+
+    print(flush=True) ########################
+
+    # Select and order columns
+    df = df[[
+        # dim_date
+        'yearmo_mov_sk', #''competenciamov',
+        'yearmo_dec_sk', #'competenciadec',
+        #'competenciaexc'
+        
+        # Fatos
+        'saldomovimentacao', 'idade', 'horascontratuais', 'salario',
+        'salario_fixo', #valorsalariofixo
+        'fora_de_prazo', #'indicadordeforadoprazo',
+        'indicador_exclusao', #'indicadorexclusao'
+        
+        # Dimensoes
+        'municipio_sk', # <- 'regiao', 'uf', 'municipio'
+        
+        #-> 'cnae_sk' 
+        'cnae_sk', # <- secao', 'subclasse',
+        
+        #-> 'cbo2002_sk'
+        'cbo2002_sk', # <-cbo2002ocupacao',
+        
+        #-> dim_propria
+        'unidade_salario',              # <- 'unidadesalariocodigo',
+        'unidade_salario_desc',         # <- 'unidadesalariocodigo',
+        'tipo_empregador',              # <- 'tipoempregador',
+        'tipo_empregador_desc',         # <- 'tipoempregador',
+        'tipo_estabelecimento',         # <- 'tipoestabelecimento',
+        'tipo_estabelecimento_desc',    # <- 'tipoestabelecimento',
+        'tipo_movimentacao',            # <- 'tipomovimentacao', 
+        'tipo_movimentacao_desc',       # <- 'tipomovimentacao', 
+        'trabalho_intermitente',        # <- 'indtrabintermitente', 
+        'trabalho_intermitente_desc',   # <- 'indtrabintermitente', 
+        'trabalho_parcial',             # <- 'indtrabparcial', 
+        'trabalho_parcial_desc',        # <- 'indtrabparcial', 
+        'tamanho_estab_janeiro',        # <- 'tamestabjan',
+        'tamanho_estab_janeiro_desc',   # <- 'tamestabjan',
+        'aprendiz',                     # <- 'indicadoraprendiz', 
+        'aprendiz_desc',                # <- 'indicadoraprendiz', 
+        'origem_informacao',            # <- 'origemdainformacao', 
+        'origem_informacao_desc',       # <- 'origemdainformacao', 
+        
+        #-> dim_generica 
+        'categoria',                    # <- 'categoria',
+        'categoria_desc',               # <- 'categoria',
+        'grau_de_instrucao',            # <- 'graudeinstrucao',
+        'grau_de_instrucao_desc',       # <- 'graudeinstrucao',
+        'raca_cor',                     # <- 'racacor',
+        'raca_cor_desc',                # <- 'racacor',
+        'sexo_sk',                      # <- 'sexo',
+        'tipo_deficiencia',             # <- 'tipodedeficiencia',
+        'tipo_deficiencia_desc',        # <- 'tipodedeficiencia',
+    ]]
+
+    return df, 0
 
     # Final casts
     df = df[[
@@ -323,7 +431,7 @@ def transform(dfs, dw=None, dw_sample=None, verbose=False):
     df_len = len(df)
 
     if(verbose):
-        print('{} registries transformed.'.format(len(df)))
+        print('{} registries transformed.'.format(df_len))
 
     return df, df_len
 
@@ -359,26 +467,29 @@ def load(df, dw=None, dw_sample=None, verbose=False):
 
         datadir = dw + '/' + TABLE_NAME
 
-        # Remove old parquet files
-        if verbose:
-            print(f'Removing old parquet files. ', end='', flush=True)
-        import os
-        try:
-            for f in os.listdir(datadir):
-                if f.endswith(".parquet"):
-                    os.remove(os.path.join(datadir, f))
-        except FileNotFoundError:
-            pass
+        # # Remove old parquet files
+        # if verbose:
+        #     print(f'Removing old parquet files. ', end='', flush=True)
+        # import os
+        # try:
+        #     for f in os.listdir(datadir):
+        #         if f.endswith(".parquet"):
+        #             os.remove(os.path.join(datadir, f))
+        # except FileNotFoundError:
+        #     pass
 
         # Write parquet files
-        df.to_parquet(datadir)
+        df.to_parquet(datadir, overwrite=True)
+        print( df.head())
+        print( df.dtypes)
 
     else: # target=='postgres':
 
         raise NotImplementedError
 
     # dataset length
-    df_len = len(df)
+    # df_len = len(df)
+    df_len = 0
 
     if(verbose):
         print('{} registries loaded.\n'.format(df_len))
@@ -621,13 +732,13 @@ def get_tamanho_estabelecimento_df():
     }
     return pd.DataFrame(
         sections_data.items(), columns=[
-            'tamanho_estabelecimento_janeiro',
-            'tamanho_estabelecimento_janeiro_desc'
+            'tamanho_estab_janeiro',
+            'tamanho_estab_janeiro_desc'
             ]
     ).astype(
         {
-            'tamanho_estabelecimento_janeiro':'int32',
-            'tamanho_estabelecimento_janeiro_desc':str,
+            'tamanho_estab_janeiro':'int32',
+            'tamanho_estab_janeiro_desc':str,
 
         }
     )

@@ -234,9 +234,9 @@ def fato_caged_etl(DW, DW_SAMPLE, DATASRC, verbose):
     le = lt = ll = 0
     start_time = time.time()
 
-    dfs, le = fato_caged.extract(DW, verbose)
+    # dfs, le = fato_caged.extract(DW, verbose)
 
-    df, lt = fato_caged.transform(dfs, DW, DW_SAMPLE, verbose)
+    df, lt = fato_caged.transform(None, DW, DW_SAMPLE, verbose)
 
     df, ll = fato_caged.load(df, DW, verbose=verbose)
 
