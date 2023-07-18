@@ -621,8 +621,8 @@
                     "type":"zip",
                     "filename":"cnaes.zip",
                     "hash_type":"md5",
-                    "hash":"e218ed365c9bdf6ecc6f38a88f304192",
-                    "data_file":"F.K03200$Z.D30513.CNAECSV",
+                    "hash":"0d1813115615a7666ccf0ce3cc57004a",
+                    "data_file":"F.K03200$Z.D30708.CNAECSV",
                     "target_file": "cnaes.csv",
                     "url":"https://dadosabertos.rfb.gov.br/CNPJ/cnaes.zip"
                 }
