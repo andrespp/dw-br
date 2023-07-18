@@ -1,5 +1,4 @@
-FROM continuumio/miniconda3
-MAINTAINER Andre Pereira andrespp@gmail.com
+FROM continuumio/miniconda3:22.11.1
 
 USER root
 
@@ -11,12 +10,11 @@ RUN apt-get update && apt-get install -y vim && cd ~/ && \
 # Locale
 RUN apt-get install -y locales && locale-gen pt_BR.UTF-8
 
-# Pyscopg
-RUN apt-get -y install build-essential unixodbc-dev python3-psycopg2 libpq-dev
-
 # Setup Conda Environment
-ARG CONDA_ENV_NAME=dwbra
+ARG CONDA_ENV_NAME=dwbr
 COPY ./environment.yml ./
+# RUN conda install conda=23.3.1 && conda env create -f environment.yml
+# RUN conda update -n base -c defaults conda && \
 RUN conda env create -f environment.yml
 RUN echo "source activate $CONDA_ENV_NAME" > ~/.bashrc
 ENV PATH /opt/conda/envs/$CONDA_ENV_NAME/bin:$PATH

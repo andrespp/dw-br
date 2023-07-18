@@ -1,4 +1,4 @@
-IMAGE_NAME=dw-bra
+IMAGE_NAME=dw-br
 
 .PHONY: help
 help:
