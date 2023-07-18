@@ -123,7 +123,7 @@
     - name: Create conda environment
       command: >
         {{ conda_path }}/bin/conda env create -f {{ dwbr_path }}/environment.yml
-        creates={{ conda_path }}/envs/dwbra
+        creates={{ conda_path }}/envs/dwbr
 
     - name: Install Development Packages
       apt:

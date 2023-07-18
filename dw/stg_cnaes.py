@@ -1,89 +1,60 @@
 import pandas as pd
+import numpy as np
 import dask.dataframe as dd
-import os.path
 
-TABLE_NAME = 'dim_municipio'
+TABLE_NAME = 'stg_cnaes'
 
 ###############################################################################
 # Extract functions
 ###############################################################################
-def extract(datasrc, verbose=False):
+def extract(ds_files, verbose=False):
     """Extract data from source
 
     Parameters
     ----------
-        datasrc | parquet path or dw object
-
-        verbose | boolean
+        ds_files | cvs list of filenames
 
     Returns
     -------
         df, df_len
     """
-
     if(verbose):
         print(f'{TABLE_NAME}: Extract. ', end='', flush=True)
 
-    # Check datasrc
-    if os.path.isdir(datasrc): # parquet src
-        parquet_table_path = os.path.join(
-                datasrc, 'stg_municipiosbrasileiros'
-                )
-        if os.path.isdir(parquet_table_path):
-            df, df_len = extract_parquet(parquet_table_path)
-        else:
-            raise FileNotFoundError
-    else:
-        raise NotImplementedError
+    dtype={
+        'cnae':str,
+        'classe':'str',
+    }
 
+    cols = ['cnae', 'descricao_atividade_economica']
+
+    # Data fits in memory, using Pandas
+    df = pd.read_csv(
+        ds_files,
+        names=cols
+        , sep=';',
+        encoding='latin1',
+        dtype=dtype,
+    )
+
+    df_len = len(df)
 
     if(verbose):
         print('{} registries extracted.'.format(df_len))
 
     return df, df_len
 
-def extract_parquet(datasrc):
-
-    df = pd.read_parquet(datasrc)
-    df_len = len(df)
-
-    return df, df_len
-
-
 ###############################################################################
 # Transform functions
 ###############################################################################
 def transform(df, dw=None, dw_sample=None, verbose=False):
     """Transform data
-
-    Parameters
-    ----------
-        df | Pandas DataFrame
-
-        dw | DataWarehouse object or Path string (parquet target)
-
-        dw_sample | DataWarehouse Object
-
-    Returns
-    -------
-        data | Pandas or Dask DataFrame
     """
+
     if(verbose):
         print('{}: Transform. '.format(TABLE_NAME), end='', flush=True)
 
-    if dw_sample: pass
-    if dw: pass
-
-    # Set surrogate keys
-    df.reset_index(inplace=True, drop=True)
-    df['municipio_sk'] = df.index + 1
-
-    ## Select and Reorder columns
-    df = df[[
-        'municipio_sk', 'cod_siafi', 'cod_ibge', 'cnpj', 'uf', 'nome',
-        ]]
-
-    # Dataset length
+    # Dataset len
     df_len = len(df)
 
     if(verbose):
@@ -94,25 +65,9 @@ def transform(df, dw=None, dw_sample=None, verbose=False):
 ###############################################################################
 # Load functions
 ###############################################################################
-def load(df, dw=None, dw_sample=None, verbose=False):
+def load(df, dw=None, dw_sample=None, truncate=False, verbose=False):
     """Load data into the Data Warehouse
-
-    Parameters
-    ----------
-        df | Pandas DataFrame
-            Data to be loaded
-
-        dw | DataWarehouse object or Path string (parquet target)
-
-        dw_sample | DataWarehouse object
-
-        truncate | boolean
-            If true, truncate table before loading data
-
-        verbose | boolean
     """
-    if dw_sample: pass
-
     if(verbose):
         print('{}: Load. '.format(TABLE_NAME), end='', flush=True)
 
@@ -127,10 +82,8 @@ def load(df, dw=None, dw_sample=None, verbose=False):
         dd.from_pandas(df, npartitions=1).to_parquet(datadir)
 
     else: # target=='postgres':
-
         raise NotImplementedError
 
-    # dataset length
     df_len = len(df)
 
     if(verbose):

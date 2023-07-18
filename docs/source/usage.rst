@@ -11,10 +11,10 @@ rodar os scripts de ETL da ferramenta:
 
 .. code-block:: console
 
-   $ git clone git@github.com:andrespp/dw-bra.git
-   $ cd dw-bra/
+   $ git clone git@github.com:andrespp/dw-br.git
+   $ cd dw-br/
    $ docker compose up -d
-   $ conda activate dwbra && ./get_ds.py && ./extract_ds.py && ./update-dw
+   $ conda activate dwbr && ./get_ds.py && ./extract_ds.py && ./update-dw
 
 Instância pública
 -----------------

@@ -42,17 +42,20 @@ jobs:
 
           # Check if repo exists, then update or clone it
           if [ -d $APP_PATH ] ; then
+            echo "Repository exists, pulling"
             cd $APP_PATH
             git pull origin $GIT_BRANCH
 
           else # Clone repo and start postgres
 
             # Clone repo
-            ssh-keyscan github.com >> ~/.ssh/known_hosts
+            echo "Repository not found, cloning"
+            ssh-keyscan github.com >> /home/dwbr/.ssh/known_hosts
             GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
             git clone --branch $GIT_BRANCH $GIT_REPO $APP_PATH
 
             # start postgres
+            docker compose down
             docker compose up -d
 
           fi

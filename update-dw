@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""etl.py
+"""update-dw
 """
 import time
 import app
@@ -13,32 +13,38 @@ start_time = time.time()
 # Script setup
 # CONFIG_FILE=args.config_file
 COMMAND=args.subparser_name
-DATASETS=etl.datasets
+# DATASETS=etl.datasets
 
 if __name__ == '__main__':
 
     # Read configuration File
     app.init_app()
 
-    if COMMAND is None:
-        COMMAND = 'all'
-        args.tables = 'all'
+    # Read Commands
+    if COMMAND is None: # Build all DW
+        ds_group = 'all'
+        ds_name = 'all'
+        ds_table = 'all'
 
-    if COMMAND == 'all':
+    if COMMAND == 'all': # Build all DW
+        ds_group = 'all'
+        ds_name = args.datasets
+        ds_table = 'all'
 
-        for ds in DATASETS:
-            etl.trigger_etl(
-                ds, args.target, no_sample=args.no_sample,
-                tables=args.tables, verbose=app.VERBOSE
-            )
+    elif COMMAND=='table': # Build specific tables
+        ds_group = 'all'
+        ds_name = 'all'
+        ds_table = args.tables
 
-    else:
+    elif COMMAND in ['stg', 'dim', 'fact']: # Build specific table group
+        ds_group = COMMAND
+        ds_name = args.dataset
+        ds_table = 'all'
 
-        for ds in DATASETS:
-            etl.trigger_etl(
-                ds, args.target, no_sample=args.no_sample, run=[COMMAND],
-                tables=args.tables, verbose=app.VERBOSE
-            )
+    # Trigger builds
+    etl.trigger_etl(
+        ds_name, args.target, args.no_sample, ds_group, ds_table, app.VERBOSE
+    )
 
     # Post Processing
     elapsed_time = (time.time() - start_time) / 60

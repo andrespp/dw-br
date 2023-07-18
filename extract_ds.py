@@ -1,96 +1,162 @@
 #!/usr/bin/env python3
 import os
+import json
 import py7zr
 import shutil
 import zipfile
 from prefect import task, flow, get_run_logger
-from prefect_dask.task_runners import DaskTaskRunner
-# from prefect.task_runners import SequentialTaskRunner
+#from prefect_dask.task_runners import DaskTaskRunner
+#from prefect.task_runners import ConcurrentTaskRunner
+from prefect.task_runners import SequentialTaskRunner
 
 # 1st level subdirs are datasets. Nth level belengs to 1st level ds
 
+DATASET_LIST = './data/datasets.json'
 DATASRC_DIR = './data/src'
 DATASET_DIR = './data/raw'
 
 # Set Loglevel
 os.environ['PREFECT_LOGGING_LEVEL'] = 'DEBUG' # workaround to task WARNIING level
-
 @task(
-    name='Extract file'
+    name='Extract dataset resource file'
 )
-def extract_ds_file(ds_dir, ds_name, file):
+def extract_resource_file(
+        dsname, fname, src_path, destination_path, data_file, resource_type,
+        target_file=None,
+    ):
 
     log = get_run_logger()
 
+    full_resource_fname = os.path.join(src_path, fname)
+    full_target_fname = os.path.join(destination_path, target_file)
+
     # Check if destination dir exists
-    path = f'{ds_dir}/{ds_name}'
-    if not os.path.exists(path):
-        log.info(f'{ds_name}: directory "{path}" created')
-        os.makedirs(path)
+    if not os.path.exists(destination_path):
+        os.makedirs(destination_path)
+        log.info(f'{dsname}: directory "{destination_path}" created')
 
-    if py7zr.is_7zfile(file):
+    # CSV Files
+    if resource_type.lower() == 'csv':
         try:
-            with py7zr.SevenZipFile(file, mode='r') as z:
-                z.extractall(path=path)
-                log.info(f'{ds_name}: "{file}" extracted to "{path}"')
-        except py7zr.exceptions.Bad7zFile as e:
-            log.warning(f'{ds_name}: {file} 7z file is corrupted')
+            shutil.copy(full_resource_fname, full_target_fname)
+            log.info(f'{dsname}: "{fname}" copyed to "{full_target_fname}"')
+        except Exception as e:
+            log.error(
+                f'{dsname}: Unable to copy "{fname}" to "{full_target_fname}. {e}"'
+            )
 
-    elif zipfile.is_zipfile(file):
-        try:
-            with zipfile.ZipFile(file, 'r') as z:
-                z.extractall(path)
-                log.info(
-                    f'{ds_name}: "{file}" extracted to ' \
-                    f'"{path}/{z.namelist()}"'
+    # ZIP Files
+    elif resource_type.lower() == 'zip':
+        if not zipfile.is_zipfile(full_resource_fname):
+            raise TypeError('Not a zip file')
+        else:
+            try:
+                with zipfile.ZipFile(full_resource_fname, mode='r') as z:
+                    log.info(
+                        f'{dsname}: Extrating "{data_file}" to ' \
+                        f'"{full_target_fname}"'
+                    )
+                    extract_path = f'{destination_path}/tmp'
+                    z.extract(data_file, extract_path) # extract
+                    if target_file: # move
+                        os.rename(
+                            os.path.join(extract_path, data_file),
+                            full_target_fname,
+                        )
+                    print(f'removing extract_path {extract_path}')
+                    # delete extract_path
+                    shutil.rmtree(
+                        extract_path, ignore_errors=False, onerror=None
+                    )
+                    log.info(
+                        f'{dsname}: "{fname}" extracted to "{full_target_fname}"'
+                    )
+            except zipfile.BadZipFile as e:
+                log.warning(
+                    f'{dsname}: {full_resource_fname} ZIP file is corrupted'
                 )
-        except Exception as e:
-            log.warning(f'{ds_name}: {file} 7z file is corrupted')
 
+    # 7-ZIP Files
+    elif resource_type.lower() == '7z':
+        if not py7zr.is_7zfile(full_resource_fname):
+            raise TypeError('Not a 7z file')
+        else:
+            try:
+                with py7zr.SevenZipFile(full_resource_fname, mode='r') as z:
+                    z.extract(path=destination_path, targets=data_file)
+                    if target_file:
+                        os.rename(
+                            os.path.join(destination_path, data_file),
+                            os.path.join(destination_path, target_file),
+                        )
+                    log.info(
+                        f'{dsname}: "{fname}" extracted to "{full_target_fname}"'
+                    )
+            except py7zr.exceptions.Bad7zFile as e:
+                log.warning(
+                    f'{dsname}: {full_resource_fname} 7z file is corrupted'
+                )
+
+    # Invalid archive file
     else:
-        try:
-            shutil.copy(file, path)
-            log.info(f'{ds_name}: "{file}" copyed to "{path}"')
-        except Exception as e:
-            log.error(f'{ds_name}: Unable to copy "{file}" to "{path}"')
+        raise TypeError('Invalid resource file type')
+
+    return
 
 @flow(
     name='Extract Datasets',
-    task_runner=DaskTaskRunner(),
-    # task_runner=SequentialTaskRunner(),
+    #task_runner=DaskTaskRunner(),
+    #task_runner=ConcurrentTaskRunner(),
+    task_runner=SequentialTaskRunner(),
 )
 def ds_extract_flow(datasrc_dir, dataset_dir):
 
     log = get_run_logger()
 
     # Retrieve datasets
-    ds_list = []
-    with os.scandir(datasrc_dir) as it:
-        for entry in it:
-            if not entry.name.startswith('.') and entry.is_dir():
-                ds_list.append(entry.name)
+    with open(DATASET_LIST, 'r') as f:
+        datasets = json.load(f)['datasets']
+        log.info(
+            f'--> {len(datasets)} datasets found in from "{DATASET_LIST}"'
+        )
 
-    # Lookup dataset files
-    datasets = {}
+    # Iterate over datasets
+    for ds in datasets:
 
-    for ds_name in ds_list:
+            # Iterate over dataset resources
+            dsname = ds['id']
 
-        datasets[ds_name] = {}
-        file_list = []
+            if dsname == '':
+                pass
 
-        for root, dirs, files in os.walk(os.path.join(datasrc_dir, ds_name)):
+            else:
+                log.info(f'--> {ds["id"]}: {ds["name"]}')
+                src_path = DATASRC_DIR + '/' + dsname.lower()
+                destination_path = DATASET_DIR + '/' + dsname.lower()
+                for resource in ds['resources']:
+                    log.info(f'\t"{resource["filename"]}"')
+                    if resource['url'] == '':
+                        pass
+                    elif os.path.isfile(
+                        os.path.join(destination_path, resource['target_file'])
+                    ):
+                        log.warning(
+                            f'Destination file "{resource["target_file"]}" ' \
+                            f'exists, skipping'
+                    )
+                    else:
+                        log.info(f'\t"{resource["filename"]}"')
+                        # Extract datasets
+                        extract_resource_file.submit(
+                            dsname=dsname,
+                            fname=resource['filename'],
+                            src_path=src_path,
+                            destination_path=destination_path,
+                            data_file=resource['data_file'],
+                            target_file=resource['target_file'],
+                            resource_type=resource['type'],
+                        )
 
-            for file in files:
-                file_list.append(os.path.join(root, file))
-
-        datasets[ds_name]['files'] = file_list
-
-    log.info(f'Found datasets: {list(datasets.keys())}')
-
-# Extract datasets
-    for ds_name in datasets:
-        for file in datasets[ds_name]['files']:
-            extract_ds_file.submit(dataset_dir, ds_name, file)
 
 if __name__ == "__main__":
 

@@ -47,15 +47,18 @@ def init_app():
         exit(-1)
 
     ###########################################################################
-    ### Check DATA WAREHOUSE connection
-    # Initialize Data Warehouse object
-    DWO = uetl.DataWarehouse(name=CONFIG['DW']['NAME'],
-                             dbms=CONFIG['DW']['DBMS'],
-                             host=CONFIG['DW']['HOST'],
-                             port=CONFIG['DW']['PORT'],
-                             base=CONFIG['DW']['BASE'],
-                             user=CONFIG['DW']['USER'],
-                             pswd=CONFIG['DW']['PASS'])
+    ### Connections
+
+    # Data Warehouse
+    DWO = uetl.DataWarehouse(
+        name=CONFIG['DW']['NAME'],
+        dbms=CONFIG['DW']['DBMS'],
+        host=CONFIG['DW']['HOST'],
+        port=CONFIG['DW']['PORT'],
+        base=CONFIG['DW']['BASE'],
+        user=CONFIG['DW']['USER'],
+        pswd=CONFIG['DW']['PASS'],
+    )
 
     # Test dw db connection
     if DWO.test_conn():

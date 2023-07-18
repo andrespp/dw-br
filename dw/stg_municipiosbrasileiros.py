@@ -1,54 +1,45 @@
 import pandas as pd
+import numpy as np
 import dask.dataframe as dd
-import os.path
 
-TABLE_NAME = 'dim_municipio'
+TABLE_NAME = 'stg_municipiosbrasileiros'
 
 ###############################################################################
 # Extract functions
 ###############################################################################
-def extract(datasrc, verbose=False):
+def extract(ds_files, verbose=False):
     """Extract data from source
 
     Parameters
     ----------
-        datasrc | parquet path or dw object
-
-        verbose | boolean
+        ds_files | cvs list of filenames
 
     Returns
     -------
-        df, df_len
+        data : Pandas or Dask DataFrame
+            Extracted Data
     """
-
     if(verbose):
         print(f'{TABLE_NAME}: Extract. ', end='', flush=True)
 
-    # Check datasrc
-    if os.path.isdir(datasrc): # parquet src
-        parquet_table_path = os.path.join(
-                datasrc, 'stg_municipiosbrasileiros'
-                )
-        if os.path.isdir(parquet_table_path):
-            df, df_len = extract_parquet(parquet_table_path)
-        else:
-            raise FileNotFoundError
-    else:
-        raise NotImplementedError
+    dtype={'CÓDIGO SIAFI':int,
+           'CNPJ':str,
+           'DESCRIÇÃO':str,
+           'UF':str,
+           'CÓDIGO IBGE':int}
 
+    cols = ['CÓDIGO SIAFI', 'CNPJ', 'DESCRIÇÃO', 'UF', 'CÓDIGO IBGE']
+
+    # Data fits in memory, using Pandas
+    df = pd.read_csv(
+        ds_files, names=cols, sep=';', encoding='latin1', dtype=dtype,
+    )
+    df_len = len(df)
 
     if(verbose):
         print('{} registries extracted.'.format(df_len))
 
-    return df, df_len
-
-def extract_parquet(datasrc):
-
-    df = pd.read_parquet(datasrc)
-    df_len = len(df)
-
-    return df, df_len
-
+    return df
 
 ###############################################################################
 # Transform functions
@@ -71,30 +62,35 @@ def transform(df, dw=None, dw_sample=None, verbose=False):
     if(verbose):
         print('{}: Transform. '.format(TABLE_NAME), end='', flush=True)
 
-    if dw_sample: pass
-    if dw: pass
-
-    # Set surrogate keys
-    df.reset_index(inplace=True, drop=True)
-    df['municipio_sk'] = df.index + 1
+    # Rename Columns
+    df.rename(index=str,
+              columns={'CÓDIGO SIAFI': 'COD_SIAFI',
+                       'DESCRIÇÃO': 'NOME',
+                       'CÓDIGO IBGE': 'COD_IBGE',
+                      },
+              inplace=True)
 
     ## Select and Reorder columns
-    df = df[[
-        'municipio_sk', 'cod_siafi', 'cod_ibge', 'cnpj', 'uf', 'nome',
-        ]]
+    df = df[['COD_SIAFI', 'COD_IBGE', 'CNPJ', 'UF', 'NOME']]
 
-    # Dataset length
-    df_len = len(df)
+    # Remove invalid IBGE Codes
+    df = df[df['COD_IBGE']!=0]
+
+    # Lowercase columns names
+    df.columns = [x.lower() for x in df.columns]
+
+    # Set surrogate keys
+    df.set_index(np.arange(1, len(df)+1), inplace=True)
 
     if(verbose):
         print('{} registries transformed.'.format(len(df)))
 
-    return df, df_len
+    return df
 
 ###############################################################################
 # Load functions
 ###############################################################################
-def load(df, dw=None, dw_sample=None, verbose=False):
+def load(df, dw=None, dw_sample=None, truncate=False, verbose=False):
     """Load data into the Data Warehouse
 
     Parameters
@@ -111,8 +107,6 @@ def load(df, dw=None, dw_sample=None, verbose=False):
 
         verbose | boolean
     """
-    if dw_sample: pass
-
     if(verbose):
         print('{}: Load. '.format(TABLE_NAME), end='', flush=True)
 
@@ -128,13 +122,15 @@ def load(df, dw=None, dw_sample=None, verbose=False):
 
     else: # target=='postgres':
 
-        raise NotImplementedError
+        # Truncate table
+        if truncate:
+            dw.truncate(TABLE_NAME, cascade=True)
 
-    # dataset length
-    df_len = len(df)
+            dw.write(TABLE_NAME, df)
 
+    len_df = len(df)
     if(verbose):
-        print('{} registries loaded.\n'.format(df_len))
+        print('{} registries loaded.\n'.format(len_df))
 
-    return df, df_len
+    return df
 
